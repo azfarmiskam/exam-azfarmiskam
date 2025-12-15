@@ -421,6 +421,65 @@
                     </div>
                 </div>
 
+                <!-- Groups Content -->
+                <div class="spa-content" id="page-groups">
+                    <!-- Header with Add Button -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Groups</h2>
+                            <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">Manage classroom groups</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="openCreateGroupModal()" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span>➕</span>
+                            <span>Create Group</span>
+                        </button>
+                    </div>
+
+                    <!-- Filter -->
+                    <div class="card" style="margin-bottom: 1.5rem;">
+                        <div class="card-body">
+                            <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem;">
+                                <div class="form-group" style="margin: 0;">
+                                    <label class="form-label">Classroom</label>
+                                    <select id="groupClassroomFilter" class="form-control" onchange="filterGroups()">
+                                        <option value="">All Classrooms</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex; align-items: flex-end;">
+                                    <button class="btn btn-secondary" onclick="clearGroupFilters()">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Groups Table -->
+                    <div class="card">
+                        <div class="card-body" style="padding: 0;">
+                            <div style="overflow-x: auto;">
+                                <table class="data-table" id="groupsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Group Name</th>
+                                            <th>Classroom</th>
+                                            <th>Students</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="groupsTableBody">
+                                        <tr>
+                                            <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                                                <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                                                <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No groups yet</div>
+                                                <div style="font-size: 0.875rem;">Create your first group to organize students</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Results Content -->
                 <div class="spa-content" id="page-results">
                     <div class="card">
@@ -715,6 +774,36 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeStudentModal()">Cancel</button>
                     <button type="submit" class="btn btn-primary" id="studentSaveBtn">Add Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Group Modal -->
+    <div class="modal" id="groupModal" style="display: none;">
+        <div class="modal-overlay" onclick="closeGroupModal()"></div>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="groupModalTitle">Create Group</h3>
+                <button class="modal-close" onclick="closeGroupModal()">×</button>
+            </div>
+            <form id="groupForm" onsubmit="saveGroup(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Classroom *</label>
+                        <select name="classroom_id" class="form-control" required id="groupClassroomSelect">
+                            <option value="">Select classroom</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Group Name *</label>
+                        <input type="text" name="name" class="form-control" required placeholder="e.g., Group A">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeGroupModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="groupSaveBtn">Create Group</button>
                 </div>
             </form>
         </div>
@@ -1806,6 +1895,230 @@
                 const page = link.getAttribute('data-page');
                 if (page === 'students') {
                     loadStudents();
+                }
+            });
+        });
+
+        // ==========================================
+        // GROUP MANAGEMENT
+        // ==========================================
+        
+        let groups = [];
+        let allGroups = [];
+        let editingGroupId = null;
+
+        // Load all groups
+        async function loadAllGroups() {
+            try {
+                allGroups = [];
+                for (const classroom of classrooms) {
+                    const response = await fetch(`/admin/api/classrooms/${classroom.id}/groups`);
+                    const data = await response.json();
+                    const classroomGroups = (data.groups || []).map(g => ({
+                        ...g,
+                        classroom: classroom
+                    }));
+                    allGroups = allGroups.concat(classroomGroups);
+                }
+                groups = allGroups;
+                renderGroups();
+                populateGroupFilters();
+            } catch (error) {
+                console.error('Error loading groups:', error);
+                showNotification('Error loading groups', 'error');
+            }
+        }
+
+        // Render groups table
+        function renderGroups() {
+            const tbody = document.getElementById('groupsTableBody');
+            
+            if (groups.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                            <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No groups yet</div>
+                            <div style="font-size: 0.875rem;">Create your first group to organize students</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = groups.map(g => `
+                <tr>
+                    <td style="font-weight: 600;">${g.name}</td>
+                    <td><span class="badge badge-secondary">${g.classroom ? g.classroom.name : 'Unknown'}</span></td>
+                    <td><span class="badge badge-secondary">${g.students_count || 0} students</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-icon" onclick="editGroup(${g.id}, ${g.classroom_id})" title="Edit">✏️</button>
+                            <button class="btn-icon" onclick="deleteGroup(${g.id}, ${g.classroom_id})" title="Delete" style="color: var(--danger);">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Populate group filters
+        function populateGroupFilters() {
+            const classroomFilter = document.getElementById('groupClassroomFilter');
+            const classroomSelect = document.getElementById('groupClassroomSelect');
+            
+            if (classroomFilter) {
+                classroomFilter.innerHTML = '<option value="">All Classrooms</option>' +
+                    classrooms.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            }
+            
+            if (classroomSelect) {
+                classroomSelect.innerHTML = '<option value="">Select classroom</option>' +
+                    classrooms.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            }
+        }
+
+        // Filter groups
+        function filterGroups() {
+            const classroomId = document.getElementById('groupClassroomFilter').value;
+
+            groups = allGroups.filter(g => {
+                return !classroomId || g.classroom_id == classroomId;
+            });
+
+            renderGroups();
+        }
+
+        // Clear filters
+        function clearGroupFilters() {
+            document.getElementById('groupClassroomFilter').value = '';
+            groups = allGroups;
+            renderGroups();
+        }
+
+        // Open create modal
+        function openCreateGroupModal() {
+            editingGroupId = null;
+            document.getElementById('groupModalTitle').textContent = 'Create Group';
+            document.getElementById('groupSaveBtn').textContent = 'Create Group';
+            document.getElementById('groupForm').reset();
+            document.getElementById('groupModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Edit group
+        async function editGroup(id, classroomId) {
+            try {
+                const response = await fetch(`/admin/api/classrooms/${classroomId}/groups`);
+                const data = await response.json();
+                const group = (data.groups || []).find(g => g.id === id);
+                
+                if (!group) return;
+
+                editingGroupId = id;
+                editingGroupClassroomId = classroomId;
+                document.getElementById('groupModalTitle').textContent = 'Edit Group';
+                document.getElementById('groupSaveBtn').textContent = 'Update Group';
+                
+                const form = document.getElementById('groupForm');
+                form.classroom_id.value = classroomId;
+                form.name.value = group.name;
+                
+                document.getElementById('groupModal').style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            } catch (error) {
+                console.error('Error loading group:', error);
+                showNotification('Error loading group', 'error');
+            }
+        }
+
+        // Save group
+        async function saveGroup(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const classroomId = formData.get('classroom_id');
+            const data = {
+                name: formData.get('name'),
+            };
+
+            try {
+                const url = editingGroupId 
+                    ? `/admin/api/classrooms/${editingGroupClassroomId}/groups/${editingGroupId}`
+                    : `/admin/api/classrooms/${classroomId}/groups`;
+                
+                const method = editingGroupId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    closeGroupModal();
+                    loadAllGroups();
+                } else {
+                    showNotification(result.message || 'Error saving group', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving group:', error);
+                showNotification('Error: ' + error.message, 'error');
+            }
+        }
+
+        // Delete group
+        async function deleteGroup(id, classroomId) {
+            if (!confirm('Delete this group? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/api/classrooms/${classroomId}/groups/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    loadAllGroups();
+                } else {
+                    showNotification(result.message || 'Error deleting group', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting group:', error);
+                showNotification('Error deleting group', 'error');
+            }
+        }
+
+        // Close modal
+        function closeGroupModal() {
+            document.getElementById('groupModal').style.display = 'none';
+            editingGroupId = null;
+            document.body.style.overflow = '';
+        }
+
+        // Load groups when navigating to groups page
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const page = link.getAttribute('data-page');
+                if (page === 'groups') {
+                    loadAllGroups();
                 }
             });
         });
