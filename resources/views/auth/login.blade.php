@@ -20,6 +20,12 @@
         
         <!-- Login Container -->
         <div class="auth-container">
+            <!-- Back to Home Link - Top Left -->
+            <a href="/" class="back-link-top">
+                <span>←</span>
+                <span>Back to Home</span>
+            </a>
+            
             <div class="auth-card">
                 <!-- Two Column Layout -->
                 <div class="auth-grid">
@@ -31,30 +37,11 @@
                                 <h1 class="brand-title">EzExam</h1>
                                 <p class="brand-tagline">Admin Portal</p>
                             </div>
-                            <div class="brand-features">
-                                <div class="feature-badge">
-                                    <span class="badge-icon">✓</span>
-                                    <span>Secure Login</span>
-                                </div>
-                                <div class="feature-badge">
-                                    <span class="badge-icon">✓</span>
-                                    <span>Math Captcha</span>
-                                </div>
-                                <div class="feature-badge">
-                                    <span class="badge-icon">✓</span>
-                                    <span>Activity Tracking</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
                     <!-- Right Side - Login Form -->
                     <div class="auth-form-section">
-                        <div class="form-header">
-                            <h2 class="form-title">Sign In</h2>
-                            <p class="form-subtitle">Enter your credentials to access the admin panel</p>
-                        </div>
-
                         <!-- Error Messages -->
                         @if($errors->any())
                             <div class="alert alert-error">
@@ -178,14 +165,6 @@
                                 <span class="btn-icon">→</span>
                             </button>
                         </form>
-
-                        <!-- Footer Links -->
-                        <div class="auth-footer">
-                            <a href="/" class="back-link">
-                                <span>←</span>
-                                <span>Back to Home</span>
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
