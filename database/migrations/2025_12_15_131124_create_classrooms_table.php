@@ -18,11 +18,10 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('instructions')->nullable();
             $table->integer('questions_per_exam')->default(10);
-            $table->enum('question_order', ['sequential', 'random'])->default('random');
             $table->integer('timer_minutes')->nullable();
-            $table->boolean('auto_submit')->default(true);
-            $table->enum('result_visibility', ['immediate', 'email', 'both', 'hidden'])->default('immediate');
-            $table->boolean('has_groups')->default(false);
+            $table->boolean('show_results_immediately')->default(true);
+            $table->boolean('show_correct_answers')->default(false);
+            $table->boolean('allow_review')->default(true);
             $table->boolean('is_active')->default(true);
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
