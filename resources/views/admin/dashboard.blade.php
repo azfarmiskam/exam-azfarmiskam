@@ -1900,6 +1900,212 @@
         });
 
         // ==========================================
+        // STUDENT MANAGEMENT
+        // ==========================================
+        
+        let students = [];
+        let allStudents = [];
+        let editingStudentId = null;
+
+        // Load students
+        async function loadStudents() {
+            try {
+                const response = await fetch('/admin/api/students');
+                const data = await response.json();
+                allStudents = data.students;
+                students = allStudents;
+                renderStudents();
+                populateStudentFilters();
+            } catch (error) {
+                console.error('Error loading students:', error);
+                showNotification('Error loading students', 'error');
+            }
+        }
+
+        // Render students table
+        function renderStudents() {
+            const tbody = document.getElementById('studentsTableBody');
+            
+            if (students.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🎓</div>
+                            <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No exam participants yet</div>
+                            <div style="font-size: 0.875rem;">Students will appear here after they register for exams</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = students.map(s => `
+                <tr>
+                    <td style="font-weight: 600;">${s.name}</td>
+                    <td style="font-size: 0.875rem;">${s.email}</td>
+                    <td style="font-size: 0.875rem;">${s.matric_number || '-'}</td>
+                    <td><span class="badge badge-secondary">${s.classroom ? s.classroom.name : 'No classroom'}</span></td>
+                    <td><span class="badge badge-secondary">${s.group ? s.group.name : 'No group'}</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-icon" onclick="editStudent(${s.id})" title="Edit Group">✏️</button>
+                            <button class="btn-icon" onclick="deleteStudent(${s.id})" title="Delete" style="color: var(--danger);">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Populate student filters
+        function populateStudentFilters() {
+            const classroomFilter = document.getElementById('studentClassroomFilter');
+            
+            if (classroomFilter) {
+                classroomFilter.innerHTML = '<option value="">All Classrooms</option>' +
+                    classrooms.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            }
+        }
+
+        // Filter students
+        function filterStudents() {
+            const classroomId = document.getElementById('studentClassroomFilter').value;
+            const groupId = document.getElementById('studentGroupFilter').value;
+            const search = document.getElementById('studentSearch').value.toLowerCase();
+
+            students = allStudents.filter(s => {
+                const matchesClassroom = !classroomId || s.classroom_id == classroomId;
+                const matchesGroup = !groupId || s.group_id == groupId;
+                const matchesSearch = !search || 
+                    s.name.toLowerCase().includes(search) ||
+                    s.email.toLowerCase().includes(search) ||
+                    (s.matric_number && s.matric_number.toLowerCase().includes(search));
+                return matchesClassroom && matchesGroup && matchesSearch;
+            });
+
+            renderStudents();
+            
+            // Update group filter based on classroom
+            if (classroomId) {
+                loadGroupsForFilter(classroomId);
+            } else {
+                document.getElementById('studentGroupFilter').innerHTML = '<option value="">All Groups</option>';
+            }
+        }
+
+        // Load groups for filter
+        async function loadGroupsForFilter(classroomId) {
+            const groupFilter = document.getElementById('studentGroupFilter');
+            
+            try {
+                const response = await fetch(`/admin/api/classrooms/${classroomId}/groups`);
+                const data = await response.json();
+                const groups = data.groups || [];
+                
+                groupFilter.innerHTML = '<option value="">All Groups</option>' +
+                    groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+            } catch (error) {
+                console.error('Error loading groups:', error);
+            }
+        }
+
+        // Clear filters
+        function clearStudentFilters() {
+            document.getElementById('studentClassroomFilter').value = '';
+            document.getElementById('studentGroupFilter').value = '';
+            document.getElementById('studentSearch').value = '';
+            students = allStudents;
+            renderStudents();
+        }
+
+        // Edit student (change group only)
+        async function editStudent(id) {
+            const student = allStudents.find(s => s.id === id);
+            if (!student) return;
+
+            // Load groups for this classroom
+            try {
+                const response = await fetch(`/admin/api/classrooms/${student.classroom_id}/groups`);
+                const data = await response.json();
+                const groups = data.groups || [];
+                
+                const groupOptions = '<option value="">No group</option>' +
+                    groups.map(g => `<option value="${g.id}" ${g.id == student.group_id ? 'selected' : ''}>${g.name}</option>`).join('');
+                
+                const newGroupId = prompt(`Change group for ${student.name}?\n\nCurrent: ${student.group ? student.group.name : 'No group'}\n\nEnter new group ID (or leave empty for no group):`);
+                
+                if (newGroupId === null) return; // Cancelled
+                
+                // Update student
+                const updateResponse = await fetch(`/admin/api/students/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        classroom_id: student.classroom_id,
+                        group_id: newGroupId ? parseInt(newGroupId) : null,
+                        name: student.name,
+                        email: student.email,
+                        phone: student.phone,
+                        matric_number: student.matric_number
+                    })
+                });
+
+                const result = await updateResponse.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    loadStudents();
+                } else {
+                    showNotification(result.message || 'Error updating student', 'error');
+                }
+            } catch (error) {
+                console.error('Error editing student:', error);
+                showNotification('Error: ' + error.message, 'error');
+            }
+        }
+
+        // Delete student
+        async function deleteStudent(id) {
+            if (!confirm('Delete this student? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/api/students/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    loadStudents();
+                } else {
+                    showNotification(result.message || 'Error deleting student', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting student:', error);
+                showNotification('Error deleting student', 'error');
+            }
+        }
+
+        // Load students when navigating to students page
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const page = link.getAttribute('data-page');
+                if (page === 'students') {
+                    loadStudents();
+                }
+            });
+        });
+
+        // ==========================================
         // GROUP MANAGEMENT
         // ==========================================
         
