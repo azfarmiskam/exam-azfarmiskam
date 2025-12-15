@@ -202,10 +202,45 @@
 
                 <!-- Classrooms Content -->
                 <div class="spa-content" id="page-classrooms">
+                    <!-- Header with Add Button -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Classrooms</h2>
+                            <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">Manage your exam classrooms and settings</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="openCreateModal()" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span>➕</span>
+                            <span>Create Classroom</span>
+                        </button>
+                    </div>
+
+                    <!-- Classrooms Table -->
                     <div class="card">
-                        <div class="card-body">
-                            <h3>Classrooms Management</h3>
-                            <p>Classroom management features coming soon...</p>
+                        <div class="card-body" style="padding: 0;">
+                            <div style="overflow-x: auto;">
+                                <table class="data-table" id="classroomsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Code</th>
+                                            <th>Questions</th>
+                                            <th>Students</th>
+                                            <th>Timer</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="classroomsTableBody">
+                                        <tr>
+                                            <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                                                <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                                                <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No classrooms yet</div>
+                                                <div style="font-size: 0.875rem;">Create your first classroom to get started</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -293,6 +328,101 @@
         </main>
     </div>
 
+    <!-- Modals -->
+    <!-- Create/Edit Classroom Modal -->
+    <div class="modal" id="classroomModal" style="display: none;">
+        <div class="modal-overlay" onclick="closeClassroomModal()"></div>
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create Classroom</h3>
+                <button class="modal-close" onclick="closeClassroomModal()">×</button>
+            </div>
+            <form id="classroomForm" onsubmit="saveClassroom(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Classroom Name *</label>
+                        <input type="text" name="name" class="form-control" required placeholder="e.g., Mathematics 101">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Optional description"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Questions Per Exam *</label>
+                        <input type="number" name="questions_per_exam" class="form-control" required min="1" value="10">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Timer (Minutes)</label>
+                        <input type="number" name="timer_minutes" class="form-control" min="1" placeholder="Leave empty for no timer">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Instructions</label>
+                        <textarea name="instructions" class="form-control" rows="3" placeholder="Exam instructions for students"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="show_results_immediately" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Show results immediately after submission</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="show_correct_answers">
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Show correct answers in results</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="allow_review" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Allow students to review their answers</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_active" checked>
+                            <span class="checkbox-custom"></span>
+                            <span class="checkbox-text">Active (students can access)</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeClassroomModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">Create Classroom</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal" style="display: none;">
+        <div class="modal-overlay" onclick="closeDeleteModal()"></div>
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>Delete Classroom</h3>
+                <button class="modal-close" onclick="closeDeleteModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this classroom? This action cannot be undone.</p>
+                <p style="color: var(--danger); font-weight: 600;" id="deleteClassroomName"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+                <button type="button" class="btn" style="background: var(--danger); color: white;" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script>
         // Sidebar Toggle
@@ -367,6 +497,248 @@
                 targetLink.click();
             }
         }
+
+        // ==========================================
+        // CLASSROOM MANAGEMENT
+        // ==========================================
+        
+        let classrooms = [];
+        let editingClassroomId = null;
+        let deletingClassroomId = null;
+
+        // Load classrooms
+        async function loadClassrooms() {
+            try {
+                const response = await fetch('/admin/api/classrooms', {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+                const data = await response.json();
+                classrooms = data.classrooms;
+                renderClassrooms();
+                updateClassroomBadge();
+            } catch (error) {
+                console.error('Error loading classrooms:', error);
+                showNotification('Error loading classrooms', 'error');
+            }
+        }
+
+        // Render classrooms table
+        function renderClassrooms() {
+            const tbody = document.getElementById('classroomsTableBody');
+            
+            if (classrooms.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                            <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No classrooms yet</div>
+                            <div style="font-size: 0.875rem;">Create your first classroom to get started</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = classrooms.map(classroom => `
+                <tr>
+                    <td style="font-weight: 600;">${classroom.name}</td>
+                    <td><code style="background: var(--bg-light); padding: 0.25rem 0.5rem; border-radius: 4px; font-weight: 600;">${classroom.code}</code></td>
+                    <td>${classroom.questions_count || 0}</td>
+                    <td>${classroom.students_count || 0}</td>
+                    <td>${classroom.timer_minutes ? classroom.timer_minutes + ' min' : 'No limit'}</td>
+                    <td>
+                        <span class="badge ${classroom.is_active ? 'badge-success' : 'badge-secondary'}" 
+                              style="cursor: pointer;" 
+                              onclick="toggleStatus(${classroom.id})">
+                            ${classroom.is_active ? '✓ Active' : '✗ Inactive'}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-icon" onclick="editClassroom(${classroom.id})" title="Edit">✏️</button>
+                            <button class="btn-icon" onclick="deleteClassroom(${classroom.id})" title="Delete" style="color: var(--danger);">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Open create modal
+        function openCreateModal() {
+            editingClassroomId = null;
+            document.getElementById('modalTitle').textContent = 'Create Classroom';
+            document.getElementById('saveBtn').textContent = 'Create Classroom';
+            document.getElementById('classroomForm').reset();
+            document.getElementById('classroomModal').style.display = 'flex';
+        }
+
+        // Edit classroom
+        function editClassroom(id) {
+            const classroom = classrooms.find(c => c.id === id);
+            if (!classroom) return;
+
+            editingClassroomId = id;
+            document.getElementById('modalTitle').textContent = 'Edit Classroom';
+            document.getElementById('saveBtn').textContent = 'Update Classroom';
+            
+            const form = document.getElementById('classroomForm');
+            form.name.value = classroom.name;
+            form.description.value = classroom.description || '';
+            form.questions_per_exam.value = classroom.questions_per_exam;
+            form.timer_minutes.value = classroom.timer_minutes || '';
+            form.instructions.value = classroom.instructions || '';
+            form.show_results_immediately.checked = classroom.show_results_immediately;
+            form.show_correct_answers.checked = classroom.show_correct_answers;
+            form.allow_review.checked = classroom.allow_review;
+            form.is_active.checked = classroom.is_active;
+            
+            document.getElementById('classroomModal').style.display = 'flex';
+        }
+
+        // Save classroom
+        async function saveClassroom(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                questions_per_exam: parseInt(formData.get('questions_per_exam')),
+                timer_minutes: formData.get('timer_minutes') ? parseInt(formData.get('timer_minutes')) : null,
+                instructions: formData.get('instructions'),
+                show_results_immediately: formData.get('show_results_immediately') === 'on',
+                show_correct_answers: formData.get('show_correct_answers') === 'on',
+                allow_review: formData.get('allow_review') === 'on',
+                is_active: formData.get('is_active') === 'on',
+            };
+
+            try {
+                const url = editingClassroomId 
+                    ? `/admin/api/classrooms/${editingClassroomId}`
+                    : '/admin/api/classrooms';
+                
+                const method = editingClassroomId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    closeClassroomModal();
+                    loadClassrooms();
+                } else {
+                    showNotification('Error saving classroom', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving classroom:', error);
+                showNotification('Error saving classroom', 'error');
+            }
+        }
+
+        // Delete classroom
+        function deleteClassroom(id) {
+            const classroom = classrooms.find(c => c.id === id);
+            if (!classroom) return;
+
+            deletingClassroomId = id;
+            document.getElementById('deleteClassroomName').textContent = classroom.name;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        // Confirm delete
+        async function confirmDelete() {
+            try {
+                const response = await fetch(`/admin/api/classrooms/${deletingClassroomId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    closeDeleteModal();
+                    loadClassrooms();
+                } else {
+                    showNotification('Error deleting classroom', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting classroom:', error);
+                showNotification('Error deleting classroom', 'error');
+            }
+        }
+
+        // Toggle status
+        async function toggleStatus(id) {
+            try {
+                const response = await fetch(`/admin/api/classrooms/${id}/toggle-status`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    loadClassrooms();
+                } else {
+                    showNotification('Error updating status', 'error');
+                }
+            } catch (error) {
+                console.error('Error toggling status:', error);
+                showNotification('Error updating status', 'error');
+            }
+        }
+
+        // Close modals
+        function closeClassroomModal() {
+            document.getElementById('classroomModal').style.display = 'none';
+            editingClassroomId = null;
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            deletingClassroomId = null;
+        }
+
+        // Update classroom badge
+        function updateClassroomBadge() {
+            const badge = document.querySelector('.nav-link[data-page="classrooms"] .nav-badge');
+            if (badge) {
+                badge.textContent = classrooms.length;
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            // Simple alert for now - can be enhanced with a toast notification system
+            alert(message);
+        }
+
+        // Load classrooms when navigating to classrooms page
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const page = link.getAttribute('data-page');
+                if (page === 'classrooms') {
+                    loadClassrooms();
+                }
+            });
+        });
 
         // Load dashboard stats (placeholder - will be replaced with API calls)
         function loadDashboardStats() {
