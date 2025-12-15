@@ -595,6 +595,7 @@
     align-items: center;
     justify-content: center;
     padding: 1rem;
+    overflow: hidden;
 }
 
 .modal-overlay {
@@ -620,6 +621,7 @@
     display: flex;
     flex-direction: column;
     animation: slideUp 0.3s ease-out;
+    z-index: 1001;
 }
 
 @keyframes slideUp {

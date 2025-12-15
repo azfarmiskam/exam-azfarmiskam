@@ -580,6 +580,7 @@
             document.getElementById('saveBtn').textContent = 'Create Classroom';
             document.getElementById('classroomForm').reset();
             document.getElementById('classroomModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
         }
 
         // Edit classroom
@@ -603,6 +604,7 @@
             form.is_active.checked = classroom.is_active;
             
             document.getElementById('classroomModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
         }
 
         // Save classroom
@@ -671,6 +673,7 @@
             deletingClassroomId = id;
             document.getElementById('deleteClassroomName').textContent = classroom.name;
             document.getElementById('deleteModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
         }
 
         // Confirm delete
@@ -726,11 +729,13 @@
         function closeClassroomModal() {
             document.getElementById('classroomModal').style.display = 'none';
             editingClassroomId = null;
+            document.body.style.overflow = ''; // Restore background scroll
         }
 
         function closeDeleteModal() {
             document.getElementById('deleteModal').style.display = 'none';
             deletingClassroomId = null;
+            document.body.style.overflow = ''; // Restore background scroll
         }
 
         // Update classroom badge
