@@ -634,10 +634,18 @@
                     method: method,
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
                     },
                     body: JSON.stringify(data)
                 });
+
+                // Check if response is OK
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error('Server response:', text);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
                 const result = await response.json();
 
@@ -646,11 +654,12 @@
                     closeClassroomModal();
                     loadClassrooms();
                 } else {
-                    showNotification('Error saving classroom', 'error');
+                    const errorMsg = result.message || 'Error saving classroom';
+                    showNotification(errorMsg, 'error');
                 }
             } catch (error) {
                 console.error('Error saving classroom:', error);
-                showNotification('Error saving classroom', 'error');
+                showNotification('Error: ' + error.message, 'error');
             }
         }
 
