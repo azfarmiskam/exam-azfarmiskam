@@ -25,6 +25,45 @@ Route::middleware('auth')->prefix('admin/api')->name('admin.api.')->group(functi
     Route::apiResource('classrooms', \App\Http\Controllers\Admin\ClassroomController::class);
     Route::post('classrooms/{classroom}/toggle-status', [\App\Http\Controllers\Admin\ClassroomController::class, 'toggleStatus'])
         ->name('classrooms.toggle-status');
+    
+    // Classroom Groups
+    Route::get('classrooms/{classroom}/groups', [\App\Http\Controllers\Admin\ClassroomGroupController::class, 'index'])
+        ->name('classrooms.groups.index');
+    Route::post('classrooms/{classroom}/groups', [\App\Http\Controllers\Admin\ClassroomGroupController::class, 'store'])
+        ->name('classrooms.groups.store');
+    Route::put('classrooms/{classroom}/groups/{group}', [\App\Http\Controllers\Admin\ClassroomGroupController::class, 'update'])
+        ->name('classrooms.groups.update');
+    Route::delete('classrooms/{classroom}/groups/{group}', [\App\Http\Controllers\Admin\ClassroomGroupController::class, 'destroy'])
+        ->name('classrooms.groups.destroy');
+    
+    // Classroom Questions
+    Route::get('classrooms/{classroom}/questions', function(\App\Models\Classroom $classroom) {
+        $questions = $classroom->questions()->with('category')->get();
+        return response()->json(['questions' => $questions]);
+    })->name('classrooms.questions.index');
+    
+    Route::post('classrooms/{classroom}/questions', function(\Illuminate\Http\Request $request, \App\Models\Classroom $classroom) {
+        $validated = $request->validate([
+            'question_ids' => 'required|array',
+            'question_ids.*' => 'exists:questions,id'
+        ]);
+        
+        $classroom->questions()->syncWithoutDetaching($validated['question_ids']);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Questions added successfully'
+        ]);
+    })->name('classrooms.questions.store');
+    
+    Route::delete('classrooms/{classroom}/questions/{question}', function(\App\Models\Classroom $classroom, \App\Models\Question $question) {
+        $classroom->questions()->detach($question->id);
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Question removed successfully'
+        ]);
+    })->name('classrooms.questions.destroy');
 });
 
 
