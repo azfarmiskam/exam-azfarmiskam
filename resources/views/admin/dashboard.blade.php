@@ -257,10 +257,42 @@
 
                 <!-- Categories Content -->
                 <div class="spa-content" id="page-categories">
+                    <!-- Header with Add Button -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Categories</h2>
+                            <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">Organize questions by category</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="openCreateCategoryModal()" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span>➕</span>
+                            <span>Create Category</span>
+                        </button>
+                    </div>
+
+                    <!-- Categories Table -->
                     <div class="card">
-                        <div class="card-body">
-                            <h3>Categories</h3>
-                            <p>Category management features coming soon...</p>
+                        <div class="card-body" style="padding: 0;">
+                            <div style="overflow-x: auto;">
+                                <table class="data-table" id="categoriesTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Questions</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="categoriesTableBody">
+                                        <tr>
+                                            <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                                                <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+                                                <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No categories yet</div>
+                                                <div style="font-size: 0.875rem;">Create your first category to organize questions</div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -431,6 +463,34 @@
                 <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Cancel</button>
                 <button type="button" class="btn" style="background: var(--danger); color: white;" onclick="confirmDelete()">Delete</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal" id="categoryModal" style="display: none;">
+        <div class="modal-overlay" onclick="closeCategoryModal()"></div>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="categoryModalTitle">Create Category</h3>
+                <button class="modal-close" onclick="closeCategoryModal()">×</button>
+            </div>
+            <form id="categoryForm" onsubmit="saveCategory(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Category Name *</label>
+                        <input type="text" name="name" class="form-control" required placeholder="e.g., Mathematics">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="Optional description"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="categorySaveBtn">Create Category</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -845,6 +905,187 @@
                 badge.textContent = classrooms.length;
             }
         }
+
+        // ==========================================
+        // CATEGORY MANAGEMENT
+        // ==========================================
+        
+        let categories = [];
+        let editingCategoryId = null;
+
+        // Load categories
+        async function loadCategories() {
+            try {
+                const response = await fetch('/admin/api/categories', {
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+                const data = await response.json();
+                categories = data.categories;
+                renderCategories();
+            } catch (error) {
+                console.error('Error loading categories:', error);
+                showNotification('Error loading categories', 'error');
+            }
+        }
+
+        // Render categories table
+        function renderCategories() {
+            const tbody = document.getElementById('categoriesTableBody');
+            
+            if (categories.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+                            <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No categories yet</div>
+                            <div style="font-size: 0.875rem;">Create your first category to organize questions</div>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = categories.map(category => `
+                <tr>
+                    <td style="font-weight: 600;">${category.name}</td>
+                    <td style="color: var(--text-secondary); font-size: 0.875rem;">${category.description || '-'}</td>
+                    <td><span class="badge badge-secondary">${category.questions_count || 0} questions</span></td>
+                    <td>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-icon" onclick="editCategory(${category.id})" title="Edit">✏️</button>
+                            <button class="btn-icon" onclick="deleteCategory(${category.id})" title="Delete" style="color: var(--danger);">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Open create modal
+        function openCreateCategoryModal() {
+            editingCategoryId = null;
+            document.getElementById('categoryModalTitle').textContent = 'Create Category';
+            document.getElementById('categorySaveBtn').textContent = 'Create Category';
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Edit category
+        function editCategory(id) {
+            const category = categories.find(c => c.id === id);
+            if (!category) return;
+
+            editingCategoryId = id;
+            document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+            document.getElementById('categorySaveBtn').textContent = 'Update Category';
+            
+            const form = document.getElementById('categoryForm');
+            form.name.value = category.name;
+            form.description.value = category.description || '';
+            
+            document.getElementById('categoryModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Save category
+        async function saveCategory(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+            };
+
+            try {
+                const url = editingCategoryId 
+                    ? `/admin/api/categories/${editingCategoryId}`
+                    : '/admin/api/categories';
+                
+                const method = editingCategoryId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const text = await response.text();
+                    console.error('Server response:', text);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    closeCategoryModal();
+                    loadCategories();
+                } else {
+                    const errorMsg = result.message || 'Error saving category';
+                    showNotification(errorMsg, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving category:', error);
+                showNotification('Error: ' + error.message, 'error');
+            }
+        }
+
+        // Delete category
+        async function deleteCategory(id) {
+            const category = categories.find(c => c.id === id);
+            if (!category) return;
+
+            if (!confirm(`Delete category "${category.name}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/api/categories/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    loadCategories();
+                } else {
+                    showNotification(result.message || 'Error deleting category', 'error');
+                }
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                showNotification('Error deleting category', 'error');
+            }
+        }
+
+        // Close modal
+        function closeCategoryModal() {
+            document.getElementById('categoryModal').style.display = 'none';
+            editingCategoryId = null;
+            document.body.style.overflow = '';
+        }
+
+        // Load categories when navigating to categories page
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const page = link.getAttribute('data-page');
+                if (page === 'categories') {
+                    loadCategories();
+                }
+            });
+        });
 
         // Show notification
         function showNotification(message, type = 'success') {
