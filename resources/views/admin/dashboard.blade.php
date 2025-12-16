@@ -2916,8 +2916,10 @@
                     'expired': 'error'
                 };
                 
-                const statusColor = statusColors[result.status] || 'secondary';
-                const scoreColor = result.score >= 70 ? 'success' : result.score >= 50 ? 'warning' : 'error';
+                const status = result.status || 'in_progress';
+                const statusColor = statusColors[status] || 'secondary';
+                const score = result.score || 0;
+                const scoreColor = score >= 70 ? 'success' : score >= 50 ? 'warning' : 'error';
                 
                 return `
                     <tr>
@@ -2926,18 +2928,18 @@
                         <td>${result.classroom?.name || 'N/A'}</td>
                         <td>
                             <span class="badge badge-${scoreColor}">
-                                ${result.score !== null ? result.score + '%' : 'N/A'}
+                                ${result.score !== null && result.score !== undefined ? result.score + '%' : 'N/A'}
                             </span>
                         </td>
                         <td>${result.correct_answers || 0} / ${result.total_questions || 0}</td>
                         <td>
                             <span class="badge badge-${statusColor}">
-                                ${result.status.replace('_', ' ')}
+                                ${status.replace('_', ' ')}
                             </span>
                         </td>
                         <td>${result.completed_at ? new Date(result.completed_at).toLocaleString() : 'In Progress'}</td>
                         <td>
-                            ${result.status === 'completed' ? 
+                            ${status === 'completed' ? 
                                 `<button class="btn btn-sm btn-primary" onclick="viewResultDetails(${result.id})">
                                     View Details
                                 </button>` : 
@@ -2951,8 +2953,19 @@
 
         async function viewResultDetails(sessionId) {
             try {
+                console.log('Fetching details for session:', sessionId);
                 const response = await fetch(`/admin/api/exam-sessions/${sessionId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const data = await response.json();
+                console.log('Session data:', data);
+                
+                if (!data || !data.student || !data.classroom) {
+                    throw new Error('Invalid session data received');
+                }
                 
                 // Create detailed view modal
                 const detailsHtml = `
@@ -2980,7 +2993,7 @@
                         <strong>Completed:</strong> ${new Date(data.completed_at).toLocaleString()}
                     </div>
                     
-                    ${data.classroom.show_correct_answers ? `
+                    ${data.classroom.show_correct_answers && data.answers && data.answers.length > 0 ? `
                         <h5 style="margin: 1.5rem 0 1rem 0;">Answer Details</h5>
                         <div style="max-height: 400px; overflow-y: auto;">
                             ${data.answers.map((answer, index) => `
@@ -3001,7 +3014,8 @@
                 await customAlert(detailsHtml, 'Exam Result Details');
             } catch (error) {
                 console.error('Error loading result details:', error);
-                await customAlert('Error loading result details. Please try again.', 'Error');
+                console.error('Error details:', error.message);
+                await customAlert(`Error loading result details: ${error.message}\n\nPlease try again or contact support.`, 'Error');
             }
         }
 
