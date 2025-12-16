@@ -685,6 +685,10 @@
                 const result = await response.json();
                 
                 if (result.success) {
+                    // Remove beforeunload listener to prevent "Leave site?" warning
+                    window.removeEventListener('beforeunload', beforeUnloadHandler);
+                    
+                    // Redirect to results
                     window.location.href = result.redirect;
                 }
             } catch (error) {
@@ -693,11 +697,13 @@
             }
         }
 
-        // Prevent page refresh
-        window.addEventListener('beforeunload', (e) => {
+        // Prevent page refresh during exam
+        const beforeUnloadHandler = (e) => {
             e.preventDefault();
             e.returnValue = '';
-        });
+        };
+        
+        window.addEventListener('beforeunload', beforeUnloadHandler);
 
         // Load exam on page load
         loadExam();
