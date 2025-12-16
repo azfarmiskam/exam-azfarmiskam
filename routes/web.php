@@ -159,4 +159,12 @@ Route::post('/exam/{code}/session/{session}/answer', [\App\Http\Controllers\Exam
 Route::post('/exam/{code}/session/{session}/submit', [\App\Http\Controllers\ExamController::class, 'submit'])->name('exam.session.submit');
 
 // Exam Results
-Route::get('/exam/{code}/results/{session}', [\App\Http\Controllers\ExamController::class, 'results'])->name('exam.results');
+
+// Deployment Helper Routes (Temporary)
+Route::prefix('deploy-helper')->name('deploy.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\DeployController::class, 'index'])->name('index');
+    Route::post('/migrate', [\App\Http\Controllers\DeployController::class, 'migrate'])->name('migrate');
+    Route::post('/seed', [\App\Http\Controllers\DeployController::class, 'seed'])->name('seed');
+    Route::post('/clear', [\App\Http\Controllers\DeployController::class, 'clear'])->name('clear');
+});
+
