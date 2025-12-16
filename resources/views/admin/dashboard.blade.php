@@ -1292,6 +1292,12 @@
             sidebar.classList.toggle('collapsed');
             toggleIcon.textContent = sidebar.classList.contains('collapsed') ? '▶' : '◀';
             
+            // Adjust footer position
+            const footer = document.querySelector('body > div[style*="position: fixed"]');
+            if (footer) {
+                footer.style.left = sidebar.classList.contains('collapsed') ? '80px' : '250px';
+            }
+            
             // Save state to localStorage
             localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
         });
@@ -3632,5 +3638,10 @@
         // Load stats on page load
         loadDashboardStats();
     </script>
+
+    <!-- Footer -->
+    <div style="position: fixed; bottom: 0; right: 0; left: 250px; text-align: center; padding: 0.75rem 0; color: var(--text-secondary); font-size: 0.75rem; background: var(--bg-primary); border-top: 1px solid var(--border-color); z-index: 5; transition: left 0.3s ease;">
+        © {{ date('Y') }} EzExam. All rights reserved.
+    </div>
 </body>
 </html>

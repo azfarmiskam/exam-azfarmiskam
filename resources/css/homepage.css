@@ -401,10 +401,10 @@
 .homepage-footer {
     position: relative;
     z-index: 10;
-    padding: 2rem 0;
+    padding: 1rem 0;
     text-align: center;
     color: rgba(255, 255, 255, 0.7);
-    font-size: 0.9375rem;
+    font-size: 0.8125rem;
     backdrop-filter: blur(10px);
     background: rgba(255, 255, 255, 0.05);
     border-top: 1px solid rgba(255, 255, 255, 0.1);

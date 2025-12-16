@@ -814,5 +814,10 @@
         // Load exam on page load
         loadExam();
     </script>
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 1rem 0; color: #718096; font-size: 0.8125rem; background: white; border-top: 1px solid #e2e8f0;">
+        © {{ date('Y') }} EzExam. All rights reserved.
+    </div>
 </body>
 </html>
