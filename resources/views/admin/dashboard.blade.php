@@ -3388,6 +3388,199 @@
             }
         };
 
+        // ==========================================
+        // ADMIN USERS MANAGEMENT
+        // ==========================================
+        
+        let allAdmins = [];
+
+        async function loadAdmins() {
+            try {
+                const response = await fetch('/admin/api/users');
+                const data = await response.json();
+                allAdmins = data.users || [];
+                renderAdmins();
+            } catch (error) {
+                console.error('Error loading admins:', error);
+                document.getElementById('adminsTableBody').innerHTML = `
+                    <tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--error);">Error loading admins</td></tr>
+                `;
+            }
+        }
+
+        function renderAdmins() {
+            const tbody = document.getElementById('adminsTableBody');
+            
+            if (allAdmins.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No admins found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = allAdmins.map(admin => `
+                <tr>
+                    <td>${admin.name}</td>
+                    <td>${admin.email}</td>
+                    <td>${new Date(admin.created_at).toLocaleDateString()}</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" onclick="editAdmin(${admin.id})" style="margin-right: 0.5rem;">Edit</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteAdmin(${admin.id})">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAdminModal(adminId = null) {
+            document.getElementById('adminModalTitle').textContent = adminId ? 'Edit Admin User' : 'Add Admin User';
+            document.getElementById('adminId').value = adminId || '';
+            document.getElementById('adminName').value = '';
+            document.getElementById('adminEmail').value = '';
+            document.getElementById('adminPassword').value = '';
+            
+            if (adminId) {
+                const admin = allAdmins.find(a => a.id === adminId);
+                if (admin) {
+                    document.getElementById('adminName').value = admin.name;
+                    document.getElementById('adminEmail').value = admin.email;
+                }
+            }
+            
+            document.getElementById('adminModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function editAdmin(id) {
+            openAdminModal(id);
+        }
+
+        async function saveAdmin() {
+            const id = document.getElementById('adminId').value;
+            const name = document.getElementById('adminName').value.trim();
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+
+            if (!name || !email) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            if (!id && !password) {
+                alert('Password is required for new admin');
+                return;
+            }
+
+            if (password && password.length < 8) {
+                alert('Password must be at least 8 characters');
+                return;
+            }
+
+            try {
+                const url = id ? `/admin/api/users/${id}` : '/admin/api/users';
+                const method = id ? 'PUT' : 'POST';
+                
+                const body = { name, email };
+                if (password) body.password = password;
+
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (!response.ok) throw new Error('Failed to save admin');
+
+                closeAdminModal();
+                loadAdmins();
+                showNotification(id ? 'Admin updated successfully' : 'Admin created successfully', 'success');
+            } catch (error) {
+                console.error('Error saving admin:', error);
+                alert('Error saving admin. Please try again.');
+            }
+        }
+
+        async function deleteAdmin(id) {
+            if (!confirm('Are you sure you want to delete this admin?')) return;
+
+            try {
+                const response = await fetch(`/admin/api/users/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                if (!response.ok) throw new Error('Failed to delete admin');
+
+                loadAdmins();
+                showNotification('Admin deleted successfully', 'success');
+            } catch (error) {
+                console.error('Error deleting admin:', error);
+                alert('Error deleting admin. Please try again.');
+            }
+        }
+
+        // ==========================================
+        // SETTINGS MANAGEMENT
+        // ==========================================
+        
+        function saveSettings() {
+            const settings = {
+                system_name: document.getElementById('systemName').value,
+                system_email: document.getElementById('systemEmail').value,
+                timezone: document.getElementById('timezone').value,
+                allow_late_submission: document.getElementById('allowLateSubmission').checked,
+                show_score_immediately: document.getElementById('showScoreImmediately').checked,
+                allow_review_answers: document.getElementById('allowReviewAnswers').checked
+            };
+
+            // Save to localStorage for now (can be moved to backend later)
+            localStorage.setItem('systemSettings', JSON.stringify(settings));
+            showNotification('Settings saved successfully', 'success');
+        }
+
+        function resetSettings() {
+            document.getElementById('systemName').value = 'EzExam System';
+            document.getElementById('systemEmail').value = 'admin@ezexam.com';
+            document.getElementById('timezone').value = 'Asia/Kuala_Lumpur';
+            document.getElementById('allowLateSubmission').checked = true;
+            document.getElementById('showScoreImmediately').checked = true;
+            document.getElementById('allowReviewAnswers').checked = true;
+            
+            localStorage.removeItem('systemSettings');
+            showNotification('Settings reset to defaults', 'success');
+        }
+
+        function loadSettings() {
+            const saved = localStorage.getItem('systemSettings');
+            if (saved) {
+                const settings = JSON.parse(saved);
+                document.getElementById('systemName').value = settings.system_name || 'EzExam System';
+                document.getElementById('systemEmail').value = settings.system_email || 'admin@ezexam.com';
+                document.getElementById('timezone').value = settings.timezone || 'Asia/Kuala_Lumpur';
+                document.getElementById('allowLateSubmission').checked = settings.allow_late_submission !== false;
+                document.getElementById('showScoreImmediately').checked = settings.show_score_immediately !== false;
+                document.getElementById('allowReviewAnswers').checked = settings.allow_review_answers !== false;
+            }
+        }
+
+        // Update loadPageData to include admins and settings
+        const originalLoadPageData2 = loadPageData;
+        loadPageData = function(page) {
+            originalLoadPageData2(page);
+            if (page === 'admins') {
+                loadAdmins();
+            } else if (page === 'settings') {
+                loadSettings();
+            }
+        };
+
         // Load stats on page load
         loadDashboardStats();
     </script>
