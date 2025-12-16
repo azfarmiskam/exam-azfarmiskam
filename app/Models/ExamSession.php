@@ -15,6 +15,7 @@ class ExamSession extends Model
         'score',
         'total_questions',
         'correct_answers',
+        'status',
     ];
 
     protected $casts = [
