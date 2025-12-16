@@ -1233,99 +1233,268 @@
         }
 
         // View classroom details
+        let currentClassroomId = null;
+        
         function viewClassroom(id) {
             const classroom = classrooms.find(c => c.id === id);
             if (!classroom) return;
 
+            currentClassroomId = id;
+            
             const details = `
-                <div style="padding: 1.5rem;">
-                    <h2 style="margin: 0 0 1.5rem 0; font-size: 1.5rem; color: var(--text-primary);">${classroom.name}</h2>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-                        <div style="padding: 1rem; background: var(--bg-light); border-radius: 8px;">
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Classroom Code</div>
-                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); font-family: monospace;">${classroom.code}</div>
-                        </div>
-                        <div style="padding: 1rem; background: var(--bg-light); border-radius: 8px;">
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Status</div>
-                            <div style="font-size: 1.125rem; font-weight: 600; color: ${classroom.is_active ? 'var(--success)' : 'var(--text-secondary)'};">
-                                ${classroom.is_active ? '✓ Active' : '✗ Inactive'}
-                            </div>
-                        </div>
-                        <div style="padding: 1rem; background: var(--bg-light); border-radius: 8px;">
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Questions</div>
-                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">${classroom.questions_count || 0}</div>
-                        </div>
-                        <div style="padding: 1rem; background: var(--bg-light); border-radius: 8px;">
-                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Students</div>
-                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">${classroom.students_count || 0}</div>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="padding: 1rem; background: var(--bg-light); border-radius: 8px;">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Classroom Code</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary); font-family: monospace;">${classroom.code}</div>
+                    </div>
+                    <div style="padding: 1rem; background: var(--bg-light); border-radius: 8px;">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Status</div>
+                        <div style="font-size: 1.125rem; font-weight: 600; color: ${classroom.is_active ? 'var(--success)' : 'var(--text-secondary)'};">
+                            ${classroom.is_active ? '✓ Active' : '✗ Inactive'}
                         </div>
                     </div>
-
-                    <div style="margin-bottom: 1rem;">
-                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Settings</div>
-                        <div style="display: grid; gap: 0.5rem;">
-                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 6px;">
-                                <span style="font-size: 0.875rem; color: var(--text-secondary);">Questions per exam:</span>
-                                <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">${classroom.questions_per_exam}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 6px;">
-                                <span style="font-size: 0.875rem; color: var(--text-secondary);">Timer:</span>
-                                <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">${classroom.timer_minutes ? classroom.timer_minutes + ' minutes' : 'No limit'}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 6px;">
-                                <span style="font-size: 0.875rem; color: var(--text-secondary);">Show results immediately:</span>
-                                <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">${classroom.show_results_immediately ? 'Yes' : 'No'}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 6px;">
-                                <span style="font-size: 0.875rem; color: var(--text-secondary);">Show correct answers:</span>
-                                <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">${classroom.show_correct_answers ? 'Yes' : 'No'}</span>
-                            </div>
-                        </div>
+                    <div style="padding: 1rem; background: var(--bg-light); border-radius: 8px;">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Questions</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">${classroom.questions_count || 0}</div>
                     </div>
-
-                    ${classroom.description ? `
-                        <div style="margin-bottom: 1rem;">
-                            <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Description</div>
-                            <div style="padding: 0.75rem; background: var(--bg-light); border-radius: 6px; font-size: 0.875rem; color: var(--text-secondary);">${classroom.description}</div>
-                        </div>
-                    ` : ''}
-
-                    <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
-                        <button class="btn btn-primary" onclick="alert('Question management coming soon!')">Manage Questions</button>
-                        <button class="btn btn-secondary" onclick="alert('Group management coming soon!')">Manage Groups</button>
+                    <div style="padding: 1rem; background: var(--bg-light); border-radius: 8px;">
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Students</div>
+                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">${classroom.students_count || 0}</div>
                     </div>
                 </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Settings</div>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 6px;">
+                            <span style="font-size: 0.875rem; color: var(--text-secondary);">Questions per exam:</span>
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">${classroom.questions_per_exam}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 6px;">
+                            <span style="font-size: 0.875rem; color: var(--text-secondary);">Timer:</span>
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">${classroom.timer_minutes ? classroom.timer_minutes + ' minutes' : 'No limit'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 6px;">
+                            <span style="font-size: 0.875rem; color: var(--text-secondary);">Show results immediately:</span>
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">${classroom.show_results_immediately ? 'Yes' : 'No'}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--bg-light); border-radius: 6px;">
+                            <span style="font-size: 0.875rem; color: var(--text-secondary);">Show correct answers:</span>
+                            <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">${classroom.show_correct_answers ? 'Yes' : 'No'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                ${classroom.description ? `
+                    <div style="margin-bottom: 1rem;">
+                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">Description</div>
+                        <div style="padding: 0.75rem; background: var(--bg-light); border-radius: 6px; font-size: 0.875rem; color: var(--text-secondary);">${classroom.description}</div>
+                    </div>
+                ` : ''}
             `;
 
-            showNotification(`Viewing ${classroom.name}`, 'info');
+            document.getElementById('classroomDetailsTitle').textContent = classroom.name;
+            document.getElementById('classroomDetailsContent').innerHTML = details;
+            document.getElementById('classroomDetailsModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeClassroomDetailsModal() {
+            document.getElementById('classroomDetailsModal').style.display = 'none';
+            document.body.style.overflow = '';
+            currentClassroomId = null;
+        }
+
+        // Question Assignment
+        let availableQuestions = [];
+        let assignedQuestions = [];
+        let filteredAvailableQuestions = [];
+
+        async function openQuestionAssignment() {
+            if (!currentClassroomId) return;
             
-            // For now, show in a simple alert-style display
-            // In production, this would be a proper modal
-            const detailsWindow = window.open('', 'Classroom Details', 'width=600,height=700');
-            detailsWindow.document.write(`
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>${classroom.name} - Details</title>
-                    <style>
-                        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
-                        :root {
-                            --primary: #3b82f6;
-                            --success: #10b981;
-                            --danger: #ef4444;
-                            --text-primary: #1e293b;
-                            --text-secondary: #64748b;
-                            --bg-light: #f1f5f9;
-                        }
-                        .btn { padding: 0.625rem 1.25rem; font-size: 0.875rem; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; }
-                        .btn-primary { background: var(--primary); color: white; }
-                        .btn-secondary { background: var(--bg-light); color: var(--text-secondary); }
-                    </style>
-                </head>
-                <body>${details}</body>
-                </html>
-            `);
+            const classroom = classrooms.find(c => c.id === currentClassroomId);
+            if (!classroom) return;
+
+            document.getElementById('assignClassroomName').textContent = classroom.name;
+            
+            // Load all questions and categories
+            await loadQuestionsForAssignment();
+            await loadCategoriesForFilter();
+            
+            document.getElementById('questionAssignmentModal').style.display = 'flex';
+        }
+
+        async function loadQuestionsForAssignment() {
+            try {
+                // Load all questions
+                const questionsResponse = await fetch('/admin/api/questions');
+                const questionsData = await questionsResponse.json();
+                availableQuestions = questionsData.questions || [];
+
+                // Load assigned questions for this classroom
+                const assignedResponse = await fetch(`/admin/api/classrooms/${currentClassroomId}/questions`);
+                const assignedData = await assignedResponse.json();
+                assignedQuestions = assignedData.questions || [];
+
+                // Filter out already assigned questions from available
+                const assignedIds = assignedQuestions.map(q => q.id);
+                filteredAvailableQuestions = availableQuestions.filter(q => !assignedIds.includes(q.id));
+
+                renderQuestionAssignment();
+            } catch (error) {
+                console.error('Error loading questions:', error);
+                showNotification('Error loading questions', 'error');
+            }
+        }
+
+        async function loadCategoriesForFilter() {
+            try {
+                const response = await fetch('/admin/api/categories');
+                const data = await response.json();
+                const categories = data.categories || [];
+                
+                const select = document.getElementById('assignCategoryFilter');
+                select.innerHTML = '<option value="">All Categories</option>' +
+                    categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        function filterAssignableQuestions() {
+            const categoryId = document.getElementById('assignCategoryFilter').value;
+            
+            const assignedIds = assignedQuestions.map(q => q.id);
+            filteredAvailableQuestions = availableQuestions.filter(q => {
+                const notAssigned = !assignedIds.includes(q.id);
+                const matchesCategory = !categoryId || q.category_id == categoryId;
+                return notAssigned && matchesCategory;
+            });
+            
+            renderQuestionAssignment();
+        }
+
+        function renderQuestionAssignment() {
+            // Render available questions
+            const availableBody = document.getElementById('availableQuestionsBody');
+            if (filteredAvailableQuestions.length === 0) {
+                availableBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            No available questions
+                        </td>
+                    </tr>
+                `;
+            } else {
+                availableBody.innerHTML = filteredAvailableQuestions.map(q => `
+                    <tr>
+                        <td style="text-align: center;">
+                            <button class="btn-icon" onclick="assignQuestion(${q.id})" title="Add">➕</button>
+                        </td>
+                        <td style="font-size: 0.875rem;">${q.question_text.substring(0, 80)}${q.question_text.length > 80 ? '...' : ''}</td>
+                        <td><span class="badge badge-secondary">${q.category ? q.category.name : 'No category'}</span></td>
+                    </tr>
+                `).join('');
+            }
+
+            // Render assigned questions
+            const assignedBody = document.getElementById('assignedQuestionsBody');
+            document.getElementById('assignedCount').textContent = assignedQuestions.length;
+            
+            if (assignedQuestions.length === 0) {
+                assignedBody.innerHTML = `
+                    <tr>
+                        <td colspan="3" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                            No questions assigned yet
+                        </td>
+                    </tr>
+                `;
+            } else {
+                assignedBody.innerHTML = assignedQuestions.map(q => `
+                    <tr>
+                        <td style="text-align: center;">
+                            <button class="btn-icon" onclick="unassignQuestion(${q.id})" title="Remove" style="color: var(--danger);">➖</button>
+                        </td>
+                        <td style="font-size: 0.875rem;">${q.question_text.substring(0, 80)}${q.question_text.length > 80 ? '...' : ''}</td>
+                        <td><span class="badge badge-secondary">${q.category ? q.category.name : 'No category'}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function assignQuestion(questionId) {
+            const question = filteredAvailableQuestions.find(q => q.id === questionId);
+            if (!question) return;
+            
+            assignedQuestions.push(question);
+            filterAssignableQuestions();
+        }
+
+        function unassignQuestion(questionId) {
+            assignedQuestions = assignedQuestions.filter(q => q.id !== questionId);
+            filterAssignableQuestions();
+        }
+
+        async function saveQuestionAssignments() {
+            try {
+                const questionIds = assignedQuestions.map(q => q.id);
+                
+                const response = await fetch(`/admin/api/classrooms/${currentClassroomId}/questions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ question_ids: questionIds })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    closeQuestionAssignmentModal();
+                    loadClassrooms(); // Reload to update counts
+                } else {
+                    showNotification(result.message || 'Error saving assignments', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving assignments:', error);
+                showNotification('Error saving assignments', 'error');
+            }
+        }
+
+        function closeQuestionAssignmentModal() {
+            document.getElementById('questionAssignmentModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Manage Classroom Groups
+        function manageClassroomGroups() {
+            if (!currentClassroomId) return;
+            
+            const classroom = classrooms.find(c => c.id === currentClassroomId);
+            if (!classroom) return;
+
+            // Close classroom details modal
+            closeClassroomDetailsModal();
+            
+            // Navigate to groups page
+            const groupsLink = document.querySelector('.nav-link[data-page="groups"]');
+            if (groupsLink) {
+                groupsLink.click();
+                
+                // Filter groups by this classroom
+                setTimeout(() => {
+                    const classroomFilter = document.getElementById('groupClassroomFilter');
+                    if (classroomFilter) {
+                        classroomFilter.value = currentClassroomId;
+                        filterGroups();
+                    }
+                }, 100);
+            }
+            
+            showNotification(`Showing groups for ${classroom.name}`, 'info');
         }
 
         // Save classroom
