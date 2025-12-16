@@ -37,6 +37,27 @@ echo "Storage Writable: " . ($isStorageWritable ? "✅ Yes" : "❌ NO") . "<br>"
 $isCacheWritable = is_writable($cachePath);
 echo "Bootstrap Cache Writable: " . ($isCacheWritable ? "✅ Yes" : "❌ NO") . "<br>";
 
+// Check .env file
+echo "<h2>3.5. Environment Check</h2>";
+$envPath = $basePath . '/.env';
+if (file_exists($envPath)) {
+    echo ".env file: ✅ Found<br>";
+    $envContent = file_get_contents($envPath);
+    if (preg_match('/APP_ENV=(.+)/', $envContent, $matches)) {
+        $appEnv = trim($matches[1]);
+        echo "APP_ENV: <strong>" . htmlspecialchars($appEnv) . "</strong><br>";
+        if ($appEnv !== 'production') {
+            echo "<div style='color:orange'>⚠️ WARNING: APP_ENV should be 'production' for assets to load correctly</div>";
+        }
+    }
+    if (preg_match('/APP_KEY=(.+)/', $envContent, $matches)) {
+        $appKey = trim($matches[1]);
+        echo "APP_KEY: " . ($appKey ? "✅ Set" : "❌ MISSING") . "<br>";
+    }
+} else {
+    echo ".env file: ❌ NOT FOUND<br>";
+}
+
 // 4. Load Application
 echo "<h2>4. Application Boot</h2>";
 try {
