@@ -1365,6 +1365,9 @@
                 // Save current page to localStorage
                 localStorage.setItem('currentPage', page);
                 
+                // Load data for the page
+                loadPageData(page);
+                
                 // Close mobile menu after navigation
                 closeMobileMenu();
             });
