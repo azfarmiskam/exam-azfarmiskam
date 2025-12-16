@@ -877,7 +877,7 @@
                 <button class="modal-close" onclick="closeClassroomDetailsModal()">×</button>
             </div>
             <div class="modal-body">
-                <div id="classroomDetailsContent"></div>
+                <div id="classroomDetailsContent" style="display: block; visibility: visible; opacity: 1;"></div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
                     <button class="btn btn-primary" onclick="openQuestionAssignment()" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
