@@ -871,13 +871,13 @@
     <!-- Classroom Details Modal -->
     <div class="modal" id="classroomDetailsModal" style="display: none;">
         <div class="modal-overlay" onclick="closeClassroomDetailsModal()"></div>
-        <div class="modal-container" style="max-width: 700px;">
+        <div class="modal-content" style="max-width: 700px;">
             <div class="modal-header">
                 <h3 id="classroomDetailsTitle">Classroom Details</h3>
                 <button class="modal-close" onclick="closeClassroomDetailsModal()">×</button>
             </div>
             <div class="modal-body">
-                <div id="classroomDetailsContent" style="display: block; visibility: visible; opacity: 1;"></div>
+                <div id="classroomDetailsContent"></div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
                     <button class="btn btn-primary" onclick="openQuestionAssignment()" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
@@ -899,7 +899,7 @@
     <!-- Question Assignment Modal -->
     <div class="modal" id="questionAssignmentModal" style="display: none;">
         <div class="modal-overlay" onclick="closeQuestionAssignmentModal()"></div>
-        <div class="modal-container" style="max-width: 900px;">
+        <div class="modal-content" style="max-width: 900px;">
             <div class="modal-header">
                 <h3>Assign Questions to <span id="assignClassroomName"></span></h3>
                 <button class="modal-close" onclick="closeQuestionAssignmentModal()">×</button>
