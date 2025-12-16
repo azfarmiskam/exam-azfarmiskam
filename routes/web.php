@@ -19,16 +19,17 @@ Route::get('/admin/dashboard', function () {
     return view('admin.dashboard');
 })->name('admin.dashboard')->middleware('auth');
 
+// Admin Classroom Preview (for testing exam interface)
+Route::get('/admin/classrooms/{classroom}/preview', [\App\Http\Controllers\Admin\ClassroomController::class, 'preview'])
+    ->name('admin.classrooms.preview')
+    ->middleware('auth');
+
 // Admin API Routes
 Route::middleware('auth')->prefix('admin/api')->name('admin.api.')->group(function () {
     // Classroom Management
     Route::apiResource('classrooms', \App\Http\Controllers\Admin\ClassroomController::class);
     Route::post('classrooms/{classroom}/toggle-status', [\App\Http\Controllers\Admin\ClassroomController::class, 'toggleStatus'])
         ->name('classrooms.toggle-status');
-    
-    // Classroom Preview (for admin testing)
-    Route::get('/classrooms/{classroom}/preview', [\App\Http\Controllers\Admin\ClassroomController::class, 'preview'])
-        ->name('classrooms.preview');
     
     // Classroom Groups
     Route::get('classrooms/{classroom}/groups', [\App\Http\Controllers\Admin\ClassroomGroupController::class, 'index'])
