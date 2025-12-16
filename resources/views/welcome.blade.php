@@ -89,6 +89,11 @@
                                 <h3>Secure Platform</h3>
                                 <p>Protected exam environment</p>
                             </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">🛡️</div>
+                                <h3>Anti-Cheat</h3>
+                                <p>Copy and right-click disabled</p>
+                            </div>
                         </div>
                     </div>
                 </div>
