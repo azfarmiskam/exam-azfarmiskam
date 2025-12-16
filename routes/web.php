@@ -127,14 +127,30 @@ Route::post('/exam/{code}/start', [\App\Http\Controllers\ExamController::class, 
 // Take Exam
 Route::get('/exam/{code}/take/{session}', function ($code, $session) {
     $examSession = \App\Models\ExamSession::with('classroom')->findOrFail($session);
+    
+    // Check if exam is already completed
+    if ($examSession->completed_at) {
+        return redirect()->route('exam.results', [
+            'code' => $code,
+            'session' => $session
+        ]);
+    }
+    
     $classroom = $examSession->classroom;
     
-    return view('exam.take', [
+    $response = response()->view('exam.take', [
         'code' => $code,
         'session' => $session,
         'classroom' => $classroom,
         'isPreview' => false
     ]);
+    
+    // Prevent caching
+    $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    $response->headers->set('Pragma', 'no-cache');
+    $response->headers->set('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
+    
+    return $response;
 })->name('exam.take');
 
 // Exam API Routes
