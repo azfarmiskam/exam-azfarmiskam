@@ -684,21 +684,107 @@
 
                 <!-- Admins Content -->
                 <div class="spa-content" id="page-admins">
+                    <!-- Header -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Admin Users</h2>
+                            <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">Manage system administrators</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="openAdminModal()" style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span>➕</span>
+                            <span>Add Admin</span>
+                        </button>
+                    </div>
+
+                    <!-- Admins Table -->
                     <div class="card">
                         <div class="card-body">
-                            <h3>Admin Users</h3>
-                            <p>Admin user management features coming soon...</p>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Created At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminsTableBody">
+                                        <tr>
+                                            <td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                                                Loading admins...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Settings Content -->
                 <div class="spa-content" id="page-settings">
-                    <div class="card">
+                    <!-- Header -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Settings</h2>
+                        <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">Configure system settings</p>
+                    </div>
+
+                    <!-- General Settings -->
+                    <div class="card" style="margin-bottom: 1.5rem;">
                         <div class="card-body">
-                            <h3>Settings</h3>
-                            <p>Settings features coming soon...</p>
+                            <h3 style="margin: 0 0 1.5rem 0; font-size: 1.125rem; font-weight: 700;">General Settings</h3>
+                            <form id="settingsForm">
+                                <div class="form-group">
+                                    <label class="form-label">System Name</label>
+                                    <input type="text" class="form-control" id="systemName" value="EzExam System" placeholder="Enter system name">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">System Email</label>
+                                    <input type="email" class="form-control" id="systemEmail" value="admin@ezexam.com" placeholder="Enter system email">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Timezone</label>
+                                    <select class="form-control" id="timezone">
+                                        <option value="Asia/Kuala_Lumpur" selected>Asia/Kuala Lumpur (UTC+8)</option>
+                                        <option value="Asia/Singapore">Asia/Singapore (UTC+8)</option>
+                                        <option value="Asia/Jakarta">Asia/Jakarta (UTC+7)</option>
+                                        <option value="UTC">UTC</option>
+                                    </select>
+                                </div>
+                            </form>
                         </div>
+                    </div>
+
+                    <!-- Exam Settings -->
+                    <div class="card" style="margin-bottom: 1.5rem;">
+                        <div class="card-body">
+                            <h3 style="margin: 0 0 1.5rem 0; font-size: 1.125rem; font-weight: 700;">Exam Settings</h3>
+                            <div class="form-group">
+                                <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" id="allowLateSubmission" checked>
+                                    <span>Allow late submission (after timer expires)</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" id="showScoreImmediately" checked>
+                                    <span>Show score immediately after submission</span>
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <input type="checkbox" id="allowReviewAnswers" checked>
+                                    <span>Allow students to review answers</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Save Button -->
+                    <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+                        <button type="button" class="btn btn-secondary" onclick="resetSettings()">Reset</button>
+                        <button type="button" class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
                     </div>
                 </div>
             </div>
@@ -1045,6 +1131,40 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="closeExamDetailsModal()">Close</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Admin User Modal -->
+    <div class="modal" id="adminModal" style="display: none;">
+        <div class="modal-overlay" onclick="closeAdminModal()"></div>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="adminModalTitle">Add Admin User</h3>
+                <button type="button" class="modal-close" onclick="closeAdminModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="adminForm">
+                    <input type="hidden" id="adminId">
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" id="adminName" required placeholder="Enter admin name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="adminEmail" required placeholder="Enter email address">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="adminPassword" placeholder="Enter password (leave blank to keep current)">
+                        <small style="color: var(--text-secondary); font-size: 0.75rem;">Minimum 8 characters</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeAdminModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveAdmin()">Save</button>
             </div>
         </div>
     </div>
