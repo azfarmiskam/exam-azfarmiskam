@@ -39,39 +39,40 @@
                     <h1 class="homepage-title">Welcome to EzExam</h1>
                     <p class="homepage-subtitle">Enter your exam code below to start your examination</p>
 
-                    <!-- Exam Code Entry Card -->
-                    <div class="exam-code-card">
-                        <h2>Enter Exam Code</h2>
-                        <p>Please enter the unique code provided by your instructor</p>
+                    <!-- Main Grid Container -->
+                    <div class="main-grid">
+                        <!-- Exam Code Entry Card -->
+                        <div class="exam-code-card">
+                            <h2>Enter Exam Code</h2>
+                            <p>Please enter the unique code provided by your instructor</p>
 
-                        @if(session('error'))
-                            <div class="error-message show">
-                                {{ session('error') }}
-                            </div>
-                        @endif
+                            @if(session('error'))
+                                <div class="error-message show">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
 
-                        <form action="{{ route('exam.verify') }}" method="POST" id="examCodeForm">
-                            @csrf
-                            <div class="code-input-group">
-                                <input 
-                                    type="text" 
-                                    name="code" 
-                                    id="examCode" 
-                                    class="code-input" 
-                                    placeholder="Enter exam code"
-                                    maxlength="10"
-                                    required
-                                    autofocus
-                                >
-                            </div>
-                            <button type="submit" class="submit-code-btn" id="submitBtn">
-                                Start Exam
-                            </button>
-                        </form>
-                    </div>
+                            <form action="{{ route('exam.verify') }}" method="POST" id="examCodeForm">
+                                @csrf
+                                <div class="code-input-group">
+                                    <input 
+                                        type="text" 
+                                        name="code" 
+                                        id="examCode" 
+                                        class="code-input" 
+                                        placeholder="Enter exam code"
+                                        maxlength="10"
+                                        required
+                                        autofocus
+                                    >
+                                </div>
+                                <button type="submit" class="submit-code-btn" id="submitBtn">
+                                    Start Exam
+                                </button>
+                            </form>
+                        </div>
 
-                    <!-- Features Section -->
-                    <div class="features-section">
+                        <!-- Features Grid -->
                         <div class="features-grid">
                             <div class="feature-item">
                                 <div class="feature-icon">⏱️</div>
