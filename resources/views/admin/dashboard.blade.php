@@ -889,8 +889,12 @@
                         <span>Manage Groups</span>
                     </button>
                 </div>
+                </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="previewExam()" style="margin-right: auto;">
+                    <span>👁️ Preview Exam</span>
+                </button>
                 <button type="button" class="btn btn-secondary" onclick="closeClassroomDetailsModal()">Close</button>
             </div>
         </div>
@@ -1524,6 +1528,20 @@
             }
             
             showNotification(`Showing groups for ${classroom.name}`, 'info');
+        }
+
+        // Preview Exam (for admin testing)
+        function previewExam() {
+            if (!currentClassroomId) return;
+            
+            const classroom = classrooms.find(c => c.id === currentClassroomId);
+            if (!classroom) return;
+
+            // Open exam preview in new tab
+            const previewUrl = `/admin/classrooms/${currentClassroomId}/preview`;
+            window.open(previewUrl, '_blank');
+            
+            showNotification(`Opening preview for ${classroom.name}`, 'info');
         }
 
         // Save classroom

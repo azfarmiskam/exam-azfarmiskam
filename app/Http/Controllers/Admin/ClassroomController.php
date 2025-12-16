@@ -124,4 +124,51 @@ class ClassroomController extends Controller
             'is_active' => $classroom->is_active
         ]);
     }
+
+    /**
+     * Preview exam interface (for admin testing).
+     */
+    public function preview(Classroom $classroom)
+    {
+        // Create a mock student for preview
+        $student = (object) [
+            'id' => 0,
+            'name' => 'Admin Preview',
+            'matric_number' => 'PREVIEW',
+            'email' => 'admin@preview.com',
+            'group' => null
+        ];
+
+        // Get sample questions
+        $questions = $classroom->questions()
+            ->with('category')
+            ->limit($classroom->questions_per_exam)
+            ->get();
+
+        if ($questions->count() < $classroom->questions_per_exam) {
+            return back()->with('error', 'Not enough questions assigned to this classroom. Please assign at least ' . $classroom->questions_per_exam . ' questions.');
+        }
+
+        // Shuffle if needed
+        if ($classroom->shuffle_questions) {
+            $questions = $questions->shuffle();
+        }
+
+        // Create mock session data
+        $sessionData = [
+            'id' => 0,
+            'questions' => $questions,
+            'timer_minutes' => $classroom->timer_minutes,
+            'expires_at' => $classroom->timer_minutes ? now()->addMinutes($classroom->timer_minutes)->toIso8601String() : null,
+            'answers' => []
+        ];
+
+        return view('exam.take', [
+            'code' => $classroom->code,
+            'session' => 0,
+            'classroom' => $classroom,
+            'isPreview' => true,
+            'previewData' => json_encode($sessionData)
+        ]);
+    }
 }

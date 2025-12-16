@@ -452,6 +452,9 @@
         // Exam data (will be loaded from backend)
         const sessionId = {{ $session }};
         const code = '{{ $code }}';
+        const isPreview = {{ isset($isPreview) && $isPreview ? 'true' : 'false' }};
+        const previewData = isPreview ? {!! $previewData ?? '{}' !!} : null;
+        
         let questions = [];
         let answers = {};
         let currentQuestionIndex = 0;
@@ -460,13 +463,22 @@
         // Load exam data
         async function loadExam() {
             try {
-                const response = await fetch(`/exam/${code}/session/${sessionId}/data`);
-                const data = await response.json();
+                let data;
+                
+                if (isPreview) {
+                    // Preview mode - use preloaded data
+                    data = previewData;
+                    console.log('Preview mode - using preloaded data');
+                } else {
+                    // Normal mode - fetch from API
+                    const response = await fetch(`/exam/${code}/session/${sessionId}/data`);
+                    data = await response.json();
+                }
                 
                 questions = data.questions;
                 answers = data.answers || {};
                 
-                if (data.timer_minutes) {
+                if (data.timer_minutes && data.expires_at) {
                     startTimer(data.expires_at);
                 }
                 
@@ -533,21 +545,23 @@
             const question = questions[currentQuestionIndex];
             answers[question.id] = option;
             
-            // Save answer to backend
-            try {
-                await fetch(`/exam/${code}/session/${sessionId}/answer`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        question_id: question.id,
-                        answer: option
-                    })
-                });
-            } catch (error) {
-                console.error('Error saving answer:', error);
+            // Save answer to backend (skip in preview mode)
+            if (!isPreview) {
+                try {
+                    await fetch(`/exam/${code}/session/${sessionId}/answer`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            question_id: question.id,
+                            answer: option
+                        })
+                    });
+                } catch (error) {
+                    console.error('Error saving answer:', error);
+                }
             }
             
             loadQuestion(currentQuestionIndex);

@@ -26,6 +26,10 @@ Route::middleware('auth')->prefix('admin/api')->name('admin.api.')->group(functi
     Route::post('classrooms/{classroom}/toggle-status', [\App\Http\Controllers\Admin\ClassroomController::class, 'toggleStatus'])
         ->name('classrooms.toggle-status');
     
+    // Classroom Preview (for admin testing)
+    Route::get('/classrooms/{classroom}/preview', [\App\Http\Controllers\Admin\ClassroomController::class, 'preview'])
+        ->name('classrooms.preview');
+    
     // Classroom Groups
     Route::get('classrooms/{classroom}/groups', [\App\Http\Controllers\Admin\ClassroomGroupController::class, 'index'])
         ->name('classrooms.groups.index');
