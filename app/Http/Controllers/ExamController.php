@@ -146,14 +146,14 @@ class ExamController extends Controller
             // If no question order in session, get from database
             if (empty($questionOrder)) {
                 $questionOrder = $session->classroom->questions()
-                    ->pluck('id')
+                    ->pluck('questions.id')
                     ->toArray();
             }
             
             // Load questions in the correct order
             $questions = $session->classroom->questions()
                 ->with('category')
-                ->whereIn('id', $questionOrder)
+                ->whereIn('questions.id', $questionOrder)
                 ->get()
                 ->sortBy(function($question) use ($questionOrder) {
                     return array_search($question->id, $questionOrder);
