@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('questions_per_exam')->default(10);
             $table->integer('timer_minutes')->nullable();
             $table->boolean('show_results_immediately')->default(true);
-            $table->boolean('show_correct_answers')->default(false);
+            $table->boolean('show_correct_answers')->default(true);
             $table->boolean('allow_review')->default(true);
             $table->boolean('shuffle_questions')->default(false);
             $table->boolean('is_active')->default(true);
