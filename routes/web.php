@@ -159,4 +159,4 @@ Route::post('/exam/{code}/session/{session}/answer', [\App\Http\Controllers\Exam
 Route::post('/exam/{code}/session/{session}/submit', [\App\Http\Controllers\ExamController::class, 'submit'])->name('exam.session.submit');
 
 // Exam Results
-
+Route::get('/exam/{code}/session/{session}/results', [\\App\\Http\\Controllers\\ExamController::class, 'results'])->name('exam.results');
