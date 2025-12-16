@@ -868,6 +868,98 @@
         </div>
     </div>
 
+    <!-- Classroom Details Modal -->
+    <div class="modal" id="classroomDetailsModal" style="display: none;">
+        <div class="modal-overlay" onclick="closeClassroomDetailsModal()"></div>
+        <div class="modal-container" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 id="classroomDetailsTitle">Classroom Details</h3>
+                <button class="modal-close" onclick="closeClassroomDetailsModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div id="classroomDetailsContent"></div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="btn btn-primary" onclick="openQuestionAssignment()" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <span>📝</span>
+                        <span>Manage Questions</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="manageClassroomGroups()" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <span>👥</span>
+                        <span>Manage Groups</span>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeClassroomDetailsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Assignment Modal -->
+    <div class="modal" id="questionAssignmentModal" style="display: none;">
+        <div class="modal-overlay" onclick="closeQuestionAssignmentModal()"></div>
+        <div class="modal-container" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3>Assign Questions to <span id="assignClassroomName"></span></h3>
+                <button class="modal-close" onclick="closeQuestionAssignmentModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Filter -->
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Filter by Category</label>
+                    <select id="assignCategoryFilter" class="form-control" onchange="filterAssignableQuestions()">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+
+                <!-- Available Questions -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.75rem;">Available Questions</h4>
+                    <div style="max-height: 300px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                        <table class="data-table" id="availableQuestionsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">Select</th>
+                                    <th>Question</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody id="availableQuestionsBody">
+                                <!-- Questions will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Assigned Questions -->
+                <div>
+                    <h4 style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.75rem;">
+                        Assigned Questions (<span id="assignedCount">0</span>)
+                    </h4>
+                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 0.5rem;">
+                        <table class="data-table" id="assignedQuestionsTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">Remove</th>
+                                    <th>Question</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assignedQuestionsBody">
+                                <!-- Assigned questions will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeQuestionAssignmentModal()">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveQuestionAssignments()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script>
         // Sidebar Toggle
