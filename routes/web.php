@@ -25,7 +25,7 @@ Route::get('/admin/classrooms/{classroom}/preview', [\App\Http\Controllers\Admin
     ->middleware('auth');
 
 // Admin API Routes
-Route::middleware('auth')->prefix('admin/api')->name('admin.api.')->group(function () {
+Route::middleware(['auth', 'no-cache'])->prefix('admin/api')->name('admin.api.')->group(function () {
     // Classroom Management
     Route::apiResource('classrooms', \App\Http\Controllers\Admin\ClassroomController::class);
     Route::post('classrooms/{classroom}/toggle-status', [\App\Http\Controllers\Admin\ClassroomController::class, 'toggleStatus'])
