@@ -126,4 +126,146 @@ class ExamController extends Controller
             'session' => $session->id
         ]);
     }
+
+    // Get exam session data (for loading questions)
+    public function getSessionData($code, $sessionId)
+    {
+        $session = ExamSession::with(['classroom', 'answers'])
+            ->findOrFail($sessionId);
+
+        // Verify session belongs to current student
+        if ($session->student_id !== session('student_id')) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Get question order from session
+        $questionOrder = session('question_order_' . $sessionId, []);
+        
+        // Load questions in the correct order
+        $questions = $session->classroom->questions()
+            ->with('category')
+            ->whereIn('id', $questionOrder)
+            ->get()
+            ->sortBy(function($question) use ($questionOrder) {
+                return array_search($question->id, $questionOrder);
+            })
+            ->values();
+
+        // Get existing answers
+        $answers = [];
+        foreach ($session->answers as $answer) {
+            $answers[$answer->question_id] = $answer->answer;
+        }
+
+        return response()->json([
+            'questions' => $questions,
+            'answers' => $answers,
+            'timer_minutes' => $session->classroom->timer_minutes,
+            'expires_at' => $session->expires_at ? $session->expires_at->toIso8601String() : null,
+        ]);
+    }
+
+    // Save student answer
+    public function saveAnswer(Request $request, $code, $sessionId)
+    {
+        $validated = $request->validate([
+            'question_id' => 'required|exists:questions,id',
+            'answer' => 'required|in:A,B,C,D',
+        ]);
+
+        $session = ExamSession::findOrFail($sessionId);
+
+        // Verify session belongs to current student
+        if ($session->student_id !== session('student_id')) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if session is still active
+        if ($session->completed_at) {
+            return response()->json(['error' => 'Exam already submitted'], 400);
+        }
+
+        // Check if expired
+        if ($session->expires_at && now()->isAfter($session->expires_at)) {
+            return response()->json(['error' => 'Exam time expired'], 400);
+        }
+
+        // Save or update answer
+        $session->answers()->updateOrCreate(
+            ['question_id' => $validated['question_id']],
+            ['answer' => $validated['answer']]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Answer saved'
+        ]);
+    }
+
+    // Submit exam
+    public function submit(Request $request, $code, $sessionId)
+    {
+        $session = ExamSession::with(['answers.question', 'classroom'])
+            ->findOrFail($sessionId);
+
+        // Verify session belongs to current student
+        if ($session->student_id !== session('student_id')) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Check if already submitted
+        if ($session->completed_at) {
+            return response()->json(['error' => 'Exam already submitted'], 400);
+        }
+
+        // Calculate score
+        $correctAnswers = 0;
+        $totalQuestions = $session->answers->count();
+
+        foreach ($session->answers as $answer) {
+            $question = $answer->question;
+            $isCorrect = $answer->answer === $question->correct_answer;
+            
+            // Update answer with correctness
+            $answer->update(['is_correct' => $isCorrect]);
+            
+            if ($isCorrect) {
+                $correctAnswers++;
+            }
+        }
+
+        $score = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0;
+
+        // Update session
+        $session->update([
+            'completed_at' => now(),
+            'score' => $score,
+            'total_questions' => $totalQuestions,
+            'correct_answers' => $correctAnswers,
+            'status' => 'completed'
+        ]);
+
+        // Clear session data
+        session()->forget(['student_id', 'classroom_id', 'question_order_' . $sessionId]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Exam submitted successfully',
+            'redirect' => route('exam.results', ['code' => $code, 'session' => $sessionId])
+        ]);
+    }
+
+    // Show exam results
+    public function results($code, $sessionId)
+    {
+        $session = ExamSession::with(['classroom', 'student', 'answers.question'])
+            ->findOrFail($sessionId);
+
+        // Check if exam is completed
+        if (!$session->completed_at) {
+            return redirect()->route('exam.take', ['code' => $code, 'session' => $sessionId]);
+        }
+
+        return view('exam.results', compact('session'));
+    }
 }

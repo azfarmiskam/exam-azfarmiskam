@@ -120,3 +120,11 @@ Route::post('/exam/{code}/start', [\App\Http\Controllers\ExamController::class, 
 Route::get('/exam/{code}/take/{session}', function ($code, $session) {
     return view('exam.take', compact('code', 'session'));
 })->name('exam.take');
+
+// Exam API Routes
+Route::get('/exam/{code}/session/{session}/data', [\App\Http\Controllers\ExamController::class, 'getSessionData'])->name('exam.session.data');
+Route::post('/exam/{code}/session/{session}/answer', [\App\Http\Controllers\ExamController::class, 'saveAnswer'])->name('exam.session.answer');
+Route::post('/exam/{code}/session/{session}/submit', [\App\Http\Controllers\ExamController::class, 'submit'])->name('exam.session.submit');
+
+// Exam Results
+Route::get('/exam/{code}/results/{session}', [\App\Http\Controllers\ExamController::class, 'results'])->name('exam.results');
