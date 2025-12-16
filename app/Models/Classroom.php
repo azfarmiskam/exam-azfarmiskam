@@ -23,6 +23,7 @@ class Classroom extends Model
         'show_results_immediately',
         'show_correct_answers',
         'allow_review',
+        'shuffle_questions',
         'instructions',
         'is_active',
         'created_by',
@@ -37,6 +38,7 @@ class Classroom extends Model
         'show_results_immediately' => 'boolean',
         'show_correct_answers' => 'boolean',
         'allow_review' => 'boolean',
+        'shuffle_questions' => 'boolean',
         'is_active' => 'boolean',
     ];
 

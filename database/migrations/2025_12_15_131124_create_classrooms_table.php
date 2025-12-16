@@ -22,6 +22,7 @@ return new class extends Migration
             $table->boolean('show_results_immediately')->default(true);
             $table->boolean('show_correct_answers')->default(false);
             $table->boolean('allow_review')->default(true);
+            $table->boolean('shuffle_questions')->default(false);
             $table->boolean('is_active')->default(true);
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
