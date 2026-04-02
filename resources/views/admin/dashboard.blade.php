@@ -86,6 +86,12 @@
                                 <span class="nav-text">Students</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-page="announcements">
+                                <span class="nav-icon">📢</span>
+                                <span class="nav-text">Announcements</span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -714,6 +720,78 @@
                     </div>
                 </div>
 
+                <!-- Announcements Content -->
+                <div class="spa-content" id="page-announcements">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div>
+                            <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Announcements</h2>
+                            <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">Send real-time messages to students during exams</p>
+                        </div>
+                    </div>
+
+                    <!-- Send Announcement Form -->
+                    <div class="card" style="margin-bottom: 1.5rem;">
+                        <div class="card-body">
+                            <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 700;">Send Announcement</h3>
+                            <form id="announcementForm" onsubmit="sendAnnouncement(event)">
+                                <div class="form-group">
+                                    <label class="form-label">Exam Room</label>
+                                    <select name="classroom_id" id="announcementClassroom" class="form-control" required>
+                                        <option value="">Select exam room</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Message</label>
+                                    <input type="text" name="message" class="form-control" placeholder="Type your announcement message..." maxlength="500" required>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: flex-end;">
+                                    <div class="form-group" style="margin: 0;">
+                                        <label class="form-label">Duration</label>
+                                        <select name="duration" class="form-control">
+                                            <option value="5">5 minutes</option>
+                                            <option value="10">10 minutes</option>
+                                            <option value="15" selected>15 minutes</option>
+                                            <option value="30">30 minutes</option>
+                                            <option value="60">1 hour</option>
+                                            <option value="120">2 hours</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" style="width: auto; white-space: nowrap;" id="sendAnnouncementBtn">
+                                        Send
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Active Announcements -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 style="margin: 0 0 1rem 0; font-size: 1.125rem; font-weight: 700;">Announcement History</h3>
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Exam Room</th>
+                                            <th>Message</th>
+                                            <th>Status</th>
+                                            <th>Expires</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="announcementsTableBody">
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-secondary);">
+                                                Loading...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Admins Content -->
                 <div class="spa-content" id="page-admins">
                     <!-- Header -->
@@ -897,11 +975,6 @@
                                 <textarea name="instructions" class="form-control" rows="3" placeholder="Exam instructions for students"></textarea>
                             </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Announcement Crawler</label>
-                                <input type="text" name="crawler_text" class="form-control" placeholder="Scrolling message for students during exam (leave empty to hide)" maxlength="500">
-                                <small style="color: var(--text-secondary); font-size: 0.7rem;">This text scrolls at the top of the exam page. Use it to inform students about important updates.</small>
-                            </div>
 
                             <div class="form-group">
                                 <label class="checkbox-label">
@@ -1475,6 +1548,7 @@
                     'results': 'Exam Results',
                     'analytics': 'Analytics',
                     'activity': 'Activity Logs',
+                    'announcements': 'Announcements',
                     'admins': 'Admin Users',
                     'settings': 'Settings'
                 };
@@ -1713,7 +1787,6 @@
             form.questions_per_exam.value = classroom.questions_per_exam;
             form.timer_minutes.value = classroom.timer_minutes || '';
             form.instructions.value = classroom.instructions || '';
-            form.crawler_text.value = classroom.crawler_text || '';
             form.show_results_immediately.checked = classroom.show_results_immediately;
             form.show_correct_answers.checked = classroom.show_correct_answers;
             form.allow_review.checked = classroom.allow_review;
@@ -2044,7 +2117,6 @@
                 questions_per_exam: parseInt(formData.get('questions_per_exam')),
                 timer_minutes: formData.get('timer_minutes') ? parseInt(formData.get('timer_minutes')) : null,
                 instructions: formData.get('instructions'),
-                crawler_text: formData.get('crawler_text') || null,
                 show_results_immediately: formData.get('show_results_immediately') === 'on',
                 show_correct_answers: formData.get('show_correct_answers') === 'on',
                 allow_review: formData.get('allow_review') === 'on',
@@ -3812,6 +3884,135 @@
         }
 
         // ==========================================
+        // ==========================================
+        // ANNOUNCEMENTS MANAGEMENT
+        // ==========================================
+
+        async function loadAnnouncements() {
+            // Populate classroom dropdown
+            const select = document.getElementById('announcementClassroom');
+            if (select.options.length <= 1 && classrooms.length > 0) {
+                classrooms.forEach(c => {
+                    if (c.is_active) {
+                        const opt = document.createElement('option');
+                        opt.value = c.id;
+                        opt.textContent = c.name;
+                        select.appendChild(opt);
+                    }
+                });
+            }
+
+            try {
+                const response = await fetch('/admin/api/announcements', {
+                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                });
+                const data = await response.json();
+                const tbody = document.getElementById('announcementsTableBody');
+
+                if (!data.announcements || data.announcements.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-secondary);">No announcements yet</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = data.announcements.map(a => {
+                    const isActive = a.is_active && !a.is_expired;
+                    const statusBadge = isActive
+                        ? '<span class="badge badge-success">Active</span>'
+                        : a.is_expired
+                            ? '<span class="badge badge-secondary">Expired</span>'
+                            : '<span class="badge badge-secondary">Stopped</span>';
+
+                    const expiresAt = new Date(a.expires_at);
+                    const timeStr = expiresAt.toLocaleString();
+
+                    return `
+                        <tr>
+                            <td>${a.classroom ? a.classroom.name : 'Unknown'}</td>
+                            <td style="font-size: 0.8125rem; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${a.message}</td>
+                            <td>${statusBadge}</td>
+                            <td style="font-size: 0.8125rem;">${timeStr}</td>
+                            <td>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    ${isActive ? `<button class="btn-icon" onclick="stopAnnouncement(${a.id})" title="Stop">⏹️</button>` : ''}
+                                    <button class="btn-icon" onclick="deleteAnnouncement(${a.id})" title="Delete" style="color: var(--danger);">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading announcements:', error);
+            }
+        }
+
+        async function sendAnnouncement(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const btn = document.getElementById('sendAnnouncementBtn');
+
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            try {
+                const response = await fetch('/admin/api/announcements', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        classroom_id: parseInt(formData.get('classroom_id')),
+                        message: formData.get('message'),
+                        duration: parseInt(formData.get('duration')),
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    form.message.value = '';
+                    loadAnnouncements();
+                } else {
+                    showNotification(result.message || 'Failed to send', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showNotification('Failed to send announcement', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Send';
+            }
+        }
+
+        async function stopAnnouncement(id) {
+            try {
+                await fetch(`/admin/api/announcements/${id}/stop`, {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                });
+                showNotification('Announcement stopped', 'success');
+                loadAnnouncements();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function deleteAnnouncement(id) {
+            if (!confirm('Delete this announcement?')) return;
+            try {
+                await fetch(`/admin/api/announcements/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+                });
+                showNotification('Announcement deleted', 'success');
+                loadAnnouncements();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
         // SETTINGS MANAGEMENT
         // ==========================================
         
@@ -3930,6 +4131,8 @@
             originalLoadPageData2(page);
             if (page === 'admins') {
                 loadAdmins();
+            } else if (page === 'announcements') {
+                loadAnnouncements();
             } else if (page === 'settings') {
                 loadSettings();
             }

@@ -763,15 +763,10 @@
     </style>
 </head>
 <body>
-    <!-- Announcement Crawler -->
-    @if($classroom->crawler_text)
-    <div class="crawler-bar">
-        <div class="crawler-track" id="crawlerTrack">
-            <span class="crawler-text">{{ $classroom->crawler_text }}</span>
-            <span class="crawler-text">{{ $classroom->crawler_text }}</span>
-        </div>
+    <!-- Announcement Crawler (dynamically loaded) -->
+    <div class="crawler-bar" id="crawlerBar" style="display: none;">
+        <div class="crawler-track" id="crawlerTrack"></div>
     </div>
-    @endif
 
     <!-- Timer Warning Banners -->
     <div class="timer-banner warning-banner" id="warningBanner">Warning: Less than 5 minutes remaining!</div>
@@ -1307,14 +1302,46 @@
             }
         });
 
-        // Adjust crawler speed based on text length
-        const crawlerTrack = document.getElementById('crawlerTrack');
-        if (crawlerTrack) {
-            const textLen = crawlerTrack.textContent.trim().length;
-            const duration = Math.max(15, textLen * 0.2);
-            crawlerTrack.style.setProperty('--crawl-duration', duration + 's');
-            crawlerTrack.style.animationDuration = duration + 's';
+        // Announcement polling
+        let lastAnnouncementIds = [];
+
+        function pollAnnouncements() {
+            if (isPreview) return;
+
+            fetch(`/exam/${code}/announcements`)
+                .then(r => r.json())
+                .then(data => {
+                    const bar = document.getElementById('crawlerBar');
+                    const track = document.getElementById('crawlerTrack');
+
+                    if (!data.announcements || data.announcements.length === 0) {
+                        bar.style.display = 'none';
+                        lastAnnouncementIds = [];
+                        return;
+                    }
+
+                    const currentIds = data.announcements.map(a => a.id).join(',');
+                    if (currentIds === lastAnnouncementIds.join(',')) return;
+                    lastAnnouncementIds = data.announcements.map(a => a.id);
+
+                    const messages = data.announcements.map(a =>
+                        `<span class="crawler-text">${a.message}</span>`
+                    ).join('');
+
+                    track.innerHTML = messages + messages;
+
+                    const textLen = track.textContent.trim().length;
+                    const duration = Math.max(15, textLen * 0.15) + 's';
+                    track.style.animationDuration = duration;
+
+                    bar.style.display = 'block';
+                })
+                .catch(() => {});
         }
+
+        // Poll every 15 seconds
+        pollAnnouncements();
+        setInterval(pollAnnouncements, 15000);
 
         // Load exam on page load
         loadExam();

@@ -210,12 +210,22 @@ EzExam by [AzfarMiskam](https://azfarmiskam.site). All rights reserved.
 
 ---
 
-**Version**: 1.3.1  
+**Version**: 1.4.0  
 **Last Updated**: April 2, 2026
 
 ---
 
 ## Version History
+
+### v1.4.0 (April 2, 2026)
+
+#### Features
+- Real-time announcement system — teachers can send scrolling messages to students mid-exam
+- Announcements page in admin sidebar with send form, duration selector, and history table
+- Student exam page polls for announcements every 15 seconds
+- Announcements auto-expire based on set duration (5 min to 2 hours)
+- Stop/delete announcements from admin panel
+- Replaced static crawler_text field on classrooms with the new real-time system
 
 ### v1.3.1 (April 2, 2026)
 

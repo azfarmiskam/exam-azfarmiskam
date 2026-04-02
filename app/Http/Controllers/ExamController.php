@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Announcement;
 use App\Models\Classroom;
 use App\Models\Student;
 use App\Models\ExamSession;
@@ -364,6 +365,19 @@ class ExamController extends Controller
         return back()->withErrors([
             'identity' => 'The matric number and email do not match our records for this exam session.'
         ])->withInput();
+    }
+
+    // Get active announcements for a classroom (student polling)
+    public function announcements($code)
+    {
+        $classroom = Classroom::where('code', $code)->firstOrFail();
+
+        $announcements = Announcement::where('classroom_id', $classroom->id)
+            ->active()
+            ->latest()
+            ->get(['id', 'message', 'expires_at']);
+
+        return response()->json(['announcements' => $announcements]);
     }
 
     // Force-complete an expired session with score calculation

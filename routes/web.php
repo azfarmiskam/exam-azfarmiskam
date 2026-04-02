@@ -89,6 +89,12 @@ Route::middleware(['auth', 'no-cache'])->prefix('admin/api')->name('admin.api.')
     Route::get('exam-sessions', [\App\Http\Controllers\Admin\ExamSessionController::class, 'index'])->name('exam-sessions.index');
     Route::get('exam-sessions/{id}', [\App\Http\Controllers\Admin\ExamSessionController::class, 'show'])->name('exam-sessions.show');
     
+    // Announcements
+    Route::get('announcements', [\App\Http\Controllers\Admin\AnnouncementController::class, 'index'])->name('announcements.index');
+    Route::post('announcements', [\App\Http\Controllers\Admin\AnnouncementController::class, 'store'])->name('announcements.store');
+    Route::post('announcements/{id}/stop', [\App\Http\Controllers\Admin\AnnouncementController::class, 'deactivate'])->name('announcements.stop');
+    Route::delete('announcements/{id}', [\App\Http\Controllers\Admin\AnnouncementController::class, 'destroy'])->name('announcements.destroy');
+
     // Admin Users
     Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::post('change-password', [\App\Http\Controllers\Admin\UserController::class, 'changePassword'])->name('change-password');
@@ -170,6 +176,9 @@ Route::get('/exam/{code}/take/{session}', function ($code, $session) {
 Route::get('/exam/{code}/session/{session}/data', [\App\Http\Controllers\ExamController::class, 'getSessionData'])->name('exam.session.data');
 Route::post('/exam/{code}/session/{session}/answer', [\App\Http\Controllers\ExamController::class, 'saveAnswer'])->name('exam.session.answer');
 Route::post('/exam/{code}/session/{session}/submit', [\App\Http\Controllers\ExamController::class, 'submit'])->name('exam.session.submit');
+
+// Exam Announcements (student polling)
+Route::get('/exam/{code}/announcements', [\App\Http\Controllers\ExamController::class, 'announcements'])->name('exam.announcements');
 
 // Exam Results
 Route::get('/exam/{code}/session/{session}/results', [\App\Http\Controllers\ExamController::class, 'results'])->name('exam.results');
