@@ -4138,8 +4138,10 @@
             }
         };
 
-        // Load stats on page load
+        // Preload essential data on page load
         loadDashboardStats();
+        loadClassrooms();
+        loadCategories();
 
         // ==========================================
         // NOTIFICATIONS
