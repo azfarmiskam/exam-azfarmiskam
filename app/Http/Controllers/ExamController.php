@@ -138,10 +138,20 @@ class ExamController extends Controller
             $session = ExamSession::with(['classroom', 'answers'])
                 ->findOrFail($sessionId);
 
-            // Verify session belongs to current student (flexible check)
+            // Verify session belongs to current student
             $currentStudentId = session('student_id');
-            if ($currentStudentId && $session->student_id !== $currentStudentId) {
+            if (!$currentStudentId || $session->student_id !== $currentStudentId) {
                 return response()->json(['error' => 'Unauthorized'], 403);
+            }
+
+            // If session has expired server-side, auto-complete it
+            if (!$session->completed_at && $session->expires_at && now()->isAfter($session->expires_at)) {
+                $this->forceCompleteSession($session);
+
+                return response()->json([
+                    'expired' => true,
+                    'redirect' => route('exam.results', ['code' => $code, 'session' => $sessionId]),
+                ]);
             }
 
             // Get question order from session
@@ -179,11 +189,9 @@ class ExamController extends Controller
         } catch (\Exception $e) {
             \Log::error('Error loading exam session data: ' . $e->getMessage());
             \Log::error($e->getTraceAsString());
-            
+
             return response()->json([
                 'error' => 'Failed to load exam data',
-                'message' => $e->getMessage(),
-                'trace' => config('app.debug') ? $e->getTraceAsString() : null
             ], 500);
         }
     }
@@ -270,7 +278,10 @@ class ExamController extends Controller
             'status' => 'completed'
         ]);
 
-        // Clear session data
+        // Grant results access before clearing student session
+        session(['results_verified_' . $sessionId => true]);
+
+        // Clear exam session data
         session()->forget(['student_id', 'classroom_id', 'question_order_' . $sessionId]);
 
         return response()->json([
@@ -286,11 +297,100 @@ class ExamController extends Controller
         $session = ExamSession::with(['classroom', 'student', 'answers.question'])
             ->findOrFail($sessionId);
 
+        // If expired but not completed, force complete it now
+        if (!$session->completed_at && $session->expires_at && now()->isAfter($session->expires_at)) {
+            $this->forceCompleteSession($session);
+            $session->refresh();
+        }
+
         // Check if exam is completed
         if (!$session->completed_at) {
             return redirect()->route('exam.take', ['code' => $code, 'session' => $sessionId]);
         }
 
+        // Check if student is verified to view this result
+        // Allow access if: student just submitted (student_id matches), or verified via session, or admin is logged in
+        $verifiedKey = 'results_verified_' . $sessionId;
+        $isOwner = session('student_id') === $session->student_id;
+        $isVerified = session($verifiedKey) === true;
+        $isAdmin = auth()->check();
+
+        if (!$isOwner && !$isVerified && !$isAdmin) {
+            return redirect()->route('exam.results.verify', ['code' => $code, 'session' => $sessionId]);
+        }
+
         return view('exam.results', compact('session'));
+    }
+
+    // Show results verification form
+    public function showResultsVerify($code, $sessionId)
+    {
+        $session = ExamSession::with('classroom')->findOrFail($sessionId);
+
+        if (!$session->completed_at) {
+            abort(404);
+        }
+
+        return view('exam.results-verify', [
+            'code' => $code,
+            'session' => $session,
+        ]);
+    }
+
+    // Verify student identity for results
+    public function verifyResults(Request $request, $code, $sessionId)
+    {
+        $request->validate([
+            'matric_number' => 'required|string',
+            'email' => 'required|email',
+        ]);
+
+        $session = ExamSession::with('student')->findOrFail($sessionId);
+
+        if (!$session->completed_at) {
+            abort(404);
+        }
+
+        $student = $session->student;
+
+        if (
+            strtolower(trim($request->matric_number)) === strtolower(trim($student->matric_number)) &&
+            strtolower(trim($request->email)) === strtolower(trim($student->email))
+        ) {
+            session(['results_verified_' . $sessionId => true]);
+            return redirect()->route('exam.results', ['code' => $code, 'session' => $sessionId]);
+        }
+
+        return back()->withErrors([
+            'identity' => 'The matric number and email do not match our records for this exam session.'
+        ])->withInput();
+    }
+
+    // Force-complete an expired session with score calculation
+    private function forceCompleteSession(ExamSession $session)
+    {
+        $session->load('answers.question');
+
+        $correctAnswers = 0;
+        $totalQuestions = $session->answers->count();
+
+        foreach ($session->answers as $answer) {
+            $isCorrect = strtoupper($answer->answer) === strtoupper($answer->question->correct_answer);
+            $answer->update(['is_correct' => $isCorrect]);
+            if ($isCorrect) $correctAnswers++;
+        }
+
+        $score = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0;
+
+        $session->update([
+            'completed_at' => $session->expires_at,
+            'score' => $score,
+            'total_questions' => $totalQuestions,
+            'correct_answers' => $correctAnswers,
+            'status' => 'expired',
+        ]);
+
+        session(['results_verified_' . $session->id => true]);
+        session()->forget(['student_id', 'classroom_id', 'question_order_' . $session->id]);
     }
 }

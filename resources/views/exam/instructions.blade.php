@@ -191,7 +191,8 @@
 <body>
     <div class="instructions-container">
         <div class="header">
-            <h1>📝 {{ $classroom->name }}</h1>
+            <img src="/images/logo.png" alt="EzExam" style="height: 64px; width: auto; margin-bottom: 0.75rem;">
+            <h1>{{ $classroom->name }}</h1>
             <p>Please read the instructions carefully before starting</p>
         </div>
 

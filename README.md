@@ -5,30 +5,37 @@ A comprehensive online examination system built with Laravel 12, designed for cr
 ## Features
 
 ### Admin Features
-- **Dashboard**: View analytics, logs, and system overview
+- **Dashboard**: View analytics, logs, and system overview with real-time notifications
 - **Classroom Management**: Create classrooms with unique access codes
   - Set question count per exam
   - Configure timer and auto-submit
   - Add student groups
   - Set result visibility (immediate/email/both/hidden)
   - Add custom instructions for students
+  - Announcement crawler (scrolling message displayed to students during exam)
 - **Question Bank**: Organize questions by category
   - Support for images in questions
   - Four multiple-choice options (A, B, C, D)
   - Auto-grading with correct answer marking
 - **Results**: View student performance and export data
-- **Admin Management**: CRUD operations for admin users
+- **Admin Management**: CRUD operations for admin users with password change
 - **Activity Logs**: Track all system activities
+- **Notifications**: Real-time bell notifications for recent exam completions
 
 ### Student Features
 - **Easy Access**: Join exams via classroom code
 - **Student Registration**: Fill in details before starting
 - **Exam Interface**:
-  - Timer countdown with auto-submit
+  - Timer countdown with warnings at 5 min and 1 min
+  - Auto-submit when time expires (no confirmation needed)
   - Skip questions and return later
-  - Question navigation
+  - Question navigation with progress tracking
+  - Answer save indicator
+  - Loading skeleton while questions load
   - Cannot copy or right-click questions
-- **Results**: View scores based on admin settings
+  - Announcement crawler for teacher messages
+- **Results**: View scores with visual score gauge, pass/fail badge, and answer review
+- **Results Access**: Students can recheck results anytime by verifying their matric number and email
 
 ## Technical Specifications
 
@@ -145,10 +152,19 @@ A comprehensive online examination system built with Laravel 12, designed for cr
 - CSRF protection on all forms
 - Password hashing with bcrypt
 - Activity logging for audit trails
-- Rate limiting on exam access
+- Login rate limiting (5 attempts per minute per IP+email)
+- Strengthened CAPTCHA with random operations (+, -, ×) — server-generated only
+- Content Security Policy (CSP) headers
+- X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy headers
+- Guest middleware on login routes (redirects authenticated users)
+- Auth middleware on logout route
+- Student identity verification for exam session access
+- Results page requires matric number + email verification
+- No error detail leaks in API responses
 - Prevent copy/paste in exam interface
 - Session management
 - SQL injection protection via Eloquent ORM
+- Server-side expired exam enforcement
 
 ## Development Workflow
 
@@ -228,5 +244,54 @@ This project is proprietary software developed for Azfar Miskam.
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: December 15, 2025
+**Version**: 1.2.0  
+**Last Updated**: April 2, 2026
+
+---
+
+## Version History
+
+### v1.2.0 (April 2, 2026)
+
+#### Security
+- Fixed CAPTCHA bypass vulnerability — server now generates all numbers, client cannot set answers
+- Added login rate limiting (5 attempts/minute per IP+email)
+- Fixed weak student auth check in exam session data endpoint
+- Added student verification to exam take route
+- Added guest middleware to login routes, auth middleware to logout
+- Removed error detail leaks (stack traces, messages) from API responses
+- Added Content-Security-Policy headers with XSS, clickjacking, and frame protection
+- Added X-Content-Type-Options, X-Frame-Options, Referrer-Policy, Permissions-Policy headers
+
+#### Admin Features
+- Admin password change (Settings page)
+- Real-time notification bell — shows recent exam completions with unread count
+- Announcement crawler — scrolling message per classroom displayed to students during exam
+- Fixed sidebar collapsed mode — icons and avatar now centered properly
+
+#### Student UX
+- Timer warnings — yellow banner at 5 min, red banner at 1 min remaining
+- Auto-submit on expiry — no confirmation modal, submits immediately with loading overlay
+- Server-side expired exam enforcement — auto-grades if student revisits expired session
+- Improved results page — animated score ring gauge, pass/fail/expired badge, color-coded stats, inline answer review
+- Loading skeleton — shimmer placeholders while exam data loads
+- Answer save indicator — "Saving..." / "Saved" feedback on answer selection
+- Submit loading overlay — full-screen spinner during exam submission
+- Results verification gate — students must enter matric number + email to view results
+- Students can recheck results anytime via verification
+
+#### UI/Branding
+- Added system versioning (`config('app.version')`)
+- Replaced emoji logos with actual logo image across all pages
+- Responsive improvements for all exam views (phone, tablet, desktop)
+- Fixed submit confirmation modal responsiveness
+
+### v1.0.0 (December 15, 2025)
+- Initial release
+- Admin dashboard with classroom, question, category, student, and group management
+- Student exam flow: register, instructions, take exam, view results
+- Multiple-choice questions with image support and answer shuffling
+- Timer countdown with configurable duration
+- Anti-cheat measures (copy/paste/right-click disabled)
+- Activity logging
+- CAPTCHA on admin login

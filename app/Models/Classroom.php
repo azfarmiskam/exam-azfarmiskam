@@ -25,6 +25,7 @@ class Classroom extends Model
         'allow_review',
         'shuffle_questions',
         'instructions',
+        'crawler_text',
         'is_active',
         'created_by',
     ];

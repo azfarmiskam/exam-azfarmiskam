@@ -9,10 +9,12 @@ Route::get('/', function () {
 })->name('home');
 
 // Authentication Routes
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.post');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::post('/captcha/refresh', [LoginController::class, 'refreshCaptchaAjax'])->name('captcha.refresh');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+    Route::post('/captcha/refresh', [LoginController::class, 'refreshCaptchaAjax'])->name('captcha.refresh');
+});
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Admin Dashboard (placeholder - will be protected by auth middleware)
 Route::get('/admin/dashboard', function () {
@@ -86,6 +88,7 @@ Route::middleware(['auth', 'no-cache'])->prefix('admin/api')->name('admin.api.')
     
     // Admin Users
     Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class);
+    Route::post('change-password', [\App\Http\Controllers\Admin\UserController::class, 'changePassword'])->name('change-password');
 });
 
 
@@ -127,7 +130,14 @@ Route::post('/exam/{code}/start', [\App\Http\Controllers\ExamController::class, 
 // Take Exam
 Route::get('/exam/{code}/take/{session}', function ($code, $session) {
     $examSession = \App\Models\ExamSession::with('classroom')->findOrFail($session);
-    
+
+    // Verify session belongs to current student
+    $currentStudentId = session('student_id');
+    if (!$currentStudentId || $examSession->student_id !== $currentStudentId) {
+        return redirect()->route('exam.register', ['code' => $code])
+            ->with('error', 'Please register before taking the exam.');
+    }
+
     // Check if exam is already completed
     if ($examSession->completed_at) {
         return redirect()->route('exam.results', [
@@ -135,21 +145,21 @@ Route::get('/exam/{code}/take/{session}', function ($code, $session) {
             'session' => $session
         ]);
     }
-    
+
     $classroom = $examSession->classroom;
-    
+
     $response = response()->view('exam.take', [
         'code' => $code,
         'session' => $session,
         'classroom' => $classroom,
         'isPreview' => false
     ]);
-    
+
     // Prevent caching
     $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     $response->headers->set('Pragma', 'no-cache');
     $response->headers->set('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
-    
+
     return $response;
 })->name('exam.take');
 
@@ -160,3 +170,5 @@ Route::post('/exam/{code}/session/{session}/submit', [\App\Http\Controllers\Exam
 
 // Exam Results
 Route::get('/exam/{code}/session/{session}/results', [\App\Http\Controllers\ExamController::class, 'results'])->name('exam.results');
+Route::get('/exam/{code}/session/{session}/verify', [\App\Http\Controllers\ExamController::class, 'showResultsVerify'])->name('exam.results.verify');
+Route::post('/exam/{code}/session/{session}/verify', [\App\Http\Controllers\ExamController::class, 'verifyResults'])->name('exam.results.verify.submit');

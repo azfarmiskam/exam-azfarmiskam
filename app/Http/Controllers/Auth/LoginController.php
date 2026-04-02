@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
@@ -15,16 +17,8 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        // Generate captcha numbers
-        $num1 = rand(1, 10);
-        $num2 = rand(1, 10);
-        
-        session([
-            'captcha_num1' => $num1,
-            'captcha_num2' => $num2,
-            'captcha_answer' => $num1 + $num2
-        ]);
-        
+        $this->refreshCaptcha();
+
         return view('auth.login');
     }
     
@@ -33,6 +27,18 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
+        // Rate limiting: 5 attempts per minute per IP+email combo
+        $throttleKey = Str::transliterate(Str::lower($request->input('email', '')) . '|' . $request->ip());
+
+        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
+            $seconds = RateLimiter::availableIn($throttleKey);
+            $this->refreshCaptcha();
+
+            return back()->withErrors([
+                'email' => "Too many login attempts. Please try again in {$seconds} seconds.",
+            ])->withInput($request->except('password', 'captcha'));
+        }
+
         // Validate input
         $request->validate([
             'email' => 'required|email',
@@ -63,19 +69,20 @@ class LoginController extends Controller
         $remember = $request->has('remember');
         
         if (Auth::attempt($credentials, $remember)) {
+            RateLimiter::clear($throttleKey);
             $request->session()->regenerate();
-            
+
             // Check if user is active
             if (!Auth::user()->is_active) {
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-                
+
                 return back()->withErrors([
                     'email' => 'Your account has been deactivated. Please contact the administrator.'
                 ])->withInput($request->except('password', 'captcha'));
             }
-            
+
             // Log the activity
             ActivityLog::create([
                 'user_id' => Auth::id(),
@@ -84,13 +91,16 @@ class LoginController extends Controller
                 'ip_address' => $request->ip(),
                 'created_at' => now(),
             ]);
-            
+
             return redirect()->intended(route('admin.dashboard'));
         }
-        
+
+        // Count failed attempt
+        RateLimiter::hit($throttleKey, 60);
+
         // Generate new captcha on failed login
         $this->refreshCaptcha();
-        
+
         return back()->withErrors([
             'email' => 'These credentials do not match our records.',
         ])->withInput($request->except('password', 'captcha'));
@@ -125,16 +135,42 @@ class LoginController extends Controller
      */
     public function refreshCaptchaAjax(Request $request)
     {
-        $num1 = $request->input('num1', rand(1, 10));
-        $num2 = $request->input('num2', rand(1, 10));
-        
+        $num1 = rand(1, 20);
+        $num2 = rand(1, 20);
+
+        // Use random operations for stronger captcha
+        $operators = ['+', '-', '×'];
+        $operator = $operators[array_rand($operators)];
+
+        switch ($operator) {
+            case '+':
+                $answer = $num1 + $num2;
+                break;
+            case '-':
+                // Ensure positive result
+                if ($num2 > $num1) { [$num1, $num2] = [$num2, $num1]; }
+                $answer = $num1 - $num2;
+                break;
+            case '×':
+                $num1 = rand(2, 12);
+                $num2 = rand(2, 9);
+                $answer = $num1 * $num2;
+                break;
+        }
+
         session([
             'captcha_num1' => $num1,
             'captcha_num2' => $num2,
-            'captcha_answer' => $num1 + $num2
+            'captcha_operator' => $operator,
+            'captcha_answer' => $answer,
         ]);
-        
-        return response()->json(['success' => true]);
+
+        return response()->json([
+            'success' => true,
+            'num1' => $num1,
+            'num2' => $num2,
+            'operator' => $operator,
+        ]);
     }
     
     /**
@@ -142,13 +178,32 @@ class LoginController extends Controller
      */
     private function refreshCaptcha()
     {
-        $num1 = rand(1, 10);
-        $num2 = rand(1, 10);
-        
+        $num1 = rand(1, 20);
+        $num2 = rand(1, 20);
+
+        $operators = ['+', '-', '×'];
+        $operator = $operators[array_rand($operators)];
+
+        switch ($operator) {
+            case '+':
+                $answer = $num1 + $num2;
+                break;
+            case '-':
+                if ($num2 > $num1) { [$num1, $num2] = [$num2, $num1]; }
+                $answer = $num1 - $num2;
+                break;
+            case '×':
+                $num1 = rand(2, 12);
+                $num2 = rand(2, 9);
+                $answer = $num1 * $num2;
+                break;
+        }
+
         session([
             'captcha_num1' => $num1,
             'captcha_num2' => $num2,
-            'captcha_answer' => $num1 + $num2
+            'captcha_operator' => $operator,
+            'captcha_answer' => $answer,
         ]);
     }
 }

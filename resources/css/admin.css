@@ -56,13 +56,12 @@
 .brand-icon {
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    border-radius: 8px;
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.125rem;
     flex-shrink: 0;
+    overflow: hidden;
 }
 
 .brand-text {
@@ -136,6 +135,25 @@
     margin: 0;
 }
 
+.sidebar.collapsed .nav-item {
+    margin: 0.25rem 0;
+}
+
+.sidebar.collapsed .nav-link {
+    justify-content: center !important;
+    padding: 0.75rem 0 !important;
+    gap: 0 !important;
+}
+
+.sidebar.collapsed .sidebar-header {
+    justify-content: center;
+    padding: 1.25rem 0.5rem;
+}
+
+.sidebar.collapsed .sidebar-nav {
+    padding: 1rem 0;
+}
+
 .nav-menu {
     list-style: none;
     padding: 0;
@@ -196,8 +214,7 @@
 }
 
 .sidebar.collapsed .nav-text {
-    opacity: 0;
-    width: 0;
+    display: none;
 }
 
 .nav-badge {
@@ -212,8 +229,7 @@
 }
 
 .sidebar.collapsed .nav-badge {
-    opacity: 0;
-    width: 0;
+    display: none;
 }
 
 /* Sidebar Footer */
@@ -260,6 +276,15 @@
 .sidebar.collapsed .user-info {
     opacity: 0;
     width: 0;
+}
+
+.sidebar.collapsed .sidebar-footer {
+    padding: 1rem 0.5rem;
+}
+
+.sidebar.collapsed .user-profile {
+    justify-content: center;
+    padding: 0.5rem;
 }
 
 .user-name {
@@ -352,6 +377,127 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Notifications Dropdown */
+.notif-wrapper {
+    position: relative;
+}
+
+.notif-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    width: 340px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-color);
+    z-index: 200;
+    overflow: hidden;
+}
+
+.notif-dropdown.open {
+    display: block;
+}
+
+.notif-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.notif-mark-read {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+}
+
+.notif-mark-read:hover {
+    text-decoration: underline;
+}
+
+.notif-list {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.notif-item {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--bg-light);
+    cursor: default;
+    transition: background 0.2s;
+}
+
+.notif-item:last-child {
+    border-bottom: none;
+}
+
+.notif-item.unread {
+    background: #f0f7ff;
+}
+
+.notif-item:hover {
+    background: var(--bg-light);
+}
+
+.notif-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.notif-icon.success { background: #d1fae5; }
+.notif-icon.info { background: #dbeafe; }
+.notif-icon.warning { background: #fef3c7; }
+
+.notif-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-text {
+    font-size: 0.8125rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+}
+
+.notif-text strong {
+    font-weight: 600;
+}
+
+.notif-time {
+    font-size: 0.6875rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+}
+
+.notif-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 0.8125rem;
+}
+
+@media (max-width: 640px) {
+    .notif-dropdown {
+        width: 290px;
+        right: -1rem;
+    }
 }
 
 .logout-btn {
@@ -879,11 +1025,48 @@ textarea.form-control {
     }
 
     .nav-text {
-        opacity: 0;
+        display: none;
+    }
+
+    .nav-badge {
+        display: none;
     }
 
     .nav-section-title {
+        display: none;
+    }
+
+    .nav-item {
+        margin: 0.25rem 0;
+    }
+
+    .nav-link {
+        justify-content: center !important;
+        padding: 0.75rem 0 !important;
+        gap: 0 !important;
+    }
+
+    .sidebar-nav {
+        padding: 1rem 0;
+    }
+
+    .sidebar-header {
+        justify-content: center;
+        padding: 1.25rem 0.5rem;
+    }
+
+    .sidebar-footer {
+        padding: 1rem 0.5rem;
+    }
+
+    .user-profile {
+        justify-content: center;
+        padding: 0.5rem;
+    }
+
+    .user-info {
         opacity: 0;
+        width: 0;
     }
 
     .main-content {

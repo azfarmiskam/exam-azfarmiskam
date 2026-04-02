@@ -60,12 +60,152 @@
         .timer.warning {
             background: #fffaf0;
             border-color: #fbd38d;
-            animation: pulse 1s infinite;
+            animation: pulse 1.5s infinite;
+        }
+
+        .timer.danger {
+            background: #fff5f5;
+            border-color: #fc8181;
+            animation: pulse-danger 0.75s infinite;
+        }
+
+        .timer.danger .timer-text {
+            color: #e53e3e;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.8; }
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.03); }
+        }
+
+        /* Timer Warning Banner */
+        .timer-banner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 0.75rem 1.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            z-index: 200;
+            transform: translateY(-100%);
+            transition: transform 0.4s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .timer-banner.visible {
+            transform: translateY(0);
+        }
+
+        .timer-banner.warning-banner {
+            background: linear-gradient(135deg, #f6e05e 0%, #ecc94b 100%);
+            color: #744210;
+        }
+
+        .timer-banner.danger-banner {
+            background: linear-gradient(135deg, #fc8181 0%, #f56565 100%);
+            color: white;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #e2e8f0 25%, #edf2f7 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 0.5rem;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-text {
+            height: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .skeleton-text.short { width: 40%; }
+        .skeleton-text.medium { width: 70%; }
+        .skeleton-text.long { width: 100%; }
+
+        .skeleton-option {
+            height: 3.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0.75rem;
+        }
+
+        /* Loading overlay for submission */
+        .submit-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(4px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .submit-overlay.visible {
+            display: flex;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .submit-overlay-text {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        /* Save indicator */
+        .save-indicator {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            z-index: 150;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .save-indicator.saving {
+            background: #ebf8ff;
+            color: #2b6cb0;
+            opacity: 1;
+        }
+
+        .save-indicator.saved {
+            background: #f0fff4;
+            color: #276749;
+            opacity: 1;
         }
 
         .timer-icon {
@@ -360,25 +500,292 @@
 
         @media (max-width: 640px) {
             .exam-header {
-                padding: 1rem;
+                padding: 0.75rem 1rem;
             }
 
             .header-content {
                 flex-direction: column;
-                gap: 0.75rem;
+                gap: 0.5rem;
+            }
+
+            .exam-title {
+                font-size: 1rem;
+            }
+
+            .timer {
+                padding: 0.375rem 0.75rem;
+            }
+
+            .timer-text {
+                font-size: 1rem;
+            }
+
+            .exam-container {
+                margin: 1rem auto;
+                padding: 0 0.75rem;
+                gap: 1rem;
             }
 
             .question-area {
-                padding: 1.5rem;
+                padding: 1.25rem;
+                border-radius: 0.75rem;
+            }
+
+            .question-text {
+                font-size: 1rem;
+            }
+
+            .option {
+                padding: 1rem;
+                gap: 0.75rem;
+            }
+
+            .option-label {
+                width: 28px;
+                height: 28px;
+                font-size: 0.8125rem;
+            }
+
+            .option-text {
+                font-size: 0.875rem;
+            }
+
+            .question-nav {
+                margin-top: 1.5rem;
+                padding-top: 1rem;
+            }
+
+            .btn {
+                padding: 0.625rem 1rem;
+                font-size: 0.875rem;
             }
 
             .grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 0.375rem;
+            }
+
+            .grid-item {
+                font-size: 0.75rem;
+            }
+
+            .progress-card, .question-grid {
+                padding: 1rem;
+                border-radius: 0.75rem;
+            }
+
+            .stat-value {
+                font-size: 1.25rem;
+            }
+
+            .submit-btn {
+                padding: 0.75rem;
+                font-size: 0.9375rem;
+            }
+
+            .timer-banner {
+                font-size: 0.8125rem;
+                padding: 0.625rem 1rem;
+            }
+
+            .save-indicator {
+                bottom: 1rem;
+                right: 1rem;
+                font-size: 0.75rem;
+                padding: 0.375rem 0.75rem;
+            }
+
+            .submit-overlay-text {
+                font-size: 1rem;
+                padding: 0 1rem;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .grid {
                 grid-template-columns: repeat(4, 1fr);
+            }
+
+            .exam-container {
+                padding: 0 0.5rem;
+            }
+        }
+
+        /* Submit Modal */
+        .submit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .submit-modal-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 440px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .submit-modal-body {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .submit-modal-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .submit-modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .submit-modal-text {
+            font-size: 0.9375rem;
+            color: #718096;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .submit-modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .submit-modal-btn {
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .submit-modal-btn.cancel {
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #4a5568;
+        }
+
+        .submit-modal-btn.confirm {
+            border: none;
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            color: white;
+        }
+
+        @media (max-width: 640px) {
+            .submit-modal-card {
+                padding: 1.5rem;
+            }
+
+            .submit-modal-icon {
+                font-size: 2rem;
+            }
+
+            .submit-modal-title {
+                font-size: 1.125rem;
+            }
+
+            .submit-modal-text {
+                font-size: 0.8125rem;
+            }
+
+            .submit-modal-btn {
+                padding: 0.75rem;
+                font-size: 0.8125rem;
+            }
+        }
+        /* Announcement Crawler */
+        .crawler-bar {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            z-index: 99;
+        }
+
+        .crawler-track {
+            display: inline-block;
+            animation: crawl var(--crawl-duration, 20s) linear infinite;
+            padding: 0.5rem 0;
+        }
+
+        .crawler-text {
+            display: inline-block;
+            color: white;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            padding: 0 3rem;
+        }
+
+        .crawler-text::before {
+            content: '📢';
+            margin-right: 0.5rem;
+        }
+
+        @keyframes crawl {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+
+        @media (max-width: 640px) {
+            .crawler-text {
+                font-size: 0.75rem;
+                padding: 0 2rem;
+            }
+
+            .crawler-track {
+                padding: 0.375rem 0;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Announcement Crawler -->
+    @if($classroom->crawler_text)
+    <div class="crawler-bar">
+        <div class="crawler-track" id="crawlerTrack">
+            <span class="crawler-text">{{ $classroom->crawler_text }}</span>
+            <span class="crawler-text">{{ $classroom->crawler_text }}</span>
+        </div>
+    </div>
+    @endif
+
+    <!-- Timer Warning Banners -->
+    <div class="timer-banner warning-banner" id="warningBanner">Warning: Less than 5 minutes remaining!</div>
+    <div class="timer-banner danger-banner" id="dangerBanner">Less than 1 minute remaining! Your exam will be auto-submitted.</div>
+
+    <!-- Submit Loading Overlay -->
+    <div class="submit-overlay" id="submitOverlay">
+        <div class="spinner"></div>
+        <div class="submit-overlay-text">Submitting your exam...</div>
+    </div>
+
+    <!-- Save Indicator -->
+    <div class="save-indicator" id="saveIndicator"></div>
+
     <!-- Header -->
     <div class="exam-header">
         <div class="header-content">
@@ -398,8 +805,11 @@
         <!-- Question Area -->
         <div class="question-area">
             <div class="question-header">
-                <div class="question-number" id="questionNumber">Question 1 of 10</div>
-                <div class="question-text" id="questionText">Loading question...</div>
+                <div class="question-number" id="questionNumber"><div class="skeleton skeleton-text short"></div></div>
+                <div class="question-text" id="questionText">
+                    <div class="skeleton skeleton-text long"></div>
+                    <div class="skeleton skeleton-text medium"></div>
+                </div>
             </div>
 
             <div class="question-image" id="questionImage" style="display: none;">
@@ -407,7 +817,10 @@
             </div>
 
             <div class="options" id="optionsContainer">
-                <!-- Options will be loaded here -->
+                <div class="skeleton skeleton-option"></div>
+                <div class="skeleton skeleton-option"></div>
+                <div class="skeleton skeleton-option"></div>
+                <div class="skeleton skeleton-option"></div>
             </div>
 
             <div class="question-nav">
@@ -452,20 +865,17 @@
     </div>
 
     <!-- Submit Confirmation Modal -->
-    <div id="submitModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center;">
-        <div style="background: white; border-radius: 16px; padding: 2rem; max-width: 500px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); animation: slideUp 0.3s ease-out;">
-            <div style="text-align: center; margin-bottom: 1.5rem;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
-                <h3 style="font-size: 1.25rem; font-weight: 700; color: #2d3748; margin: 0 0 0.5rem 0;">Submit Exam?</h3>
-                <p style="font-size: 0.9375rem; color: #718096; margin: 0;">Are you sure you want to submit your exam? This action cannot be undone.</p>
+    <!-- Submit Confirmation Modal -->
+    <div class="submit-modal" id="submitModal">
+        <div class="submit-modal-card">
+            <div class="submit-modal-body">
+                <div class="submit-modal-icon">⚠️</div>
+                <h3 class="submit-modal-title">Submit Exam?</h3>
+                <p class="submit-modal-text">Are you sure you want to submit your exam? This action cannot be undone.</p>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <button onclick="closeSubmitModal()" style="padding: 0.75rem 1.5rem; border: 2px solid #e2e8f0; background: white; color: #4a5568; border-radius: 0.5rem; font-weight: 600; font-size: 0.9375rem; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;">
-                    Cancel
-                </button>
-                <button onclick="confirmSubmit()" style="padding: 0.75rem 1.5rem; border: none; background: linear-gradient(135deg, #f56565 0%, #c53030 100%); color: white; border-radius: 0.5rem; font-weight: 600; font-size: 0.9375rem; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;">
-                    Submit Exam
-                </button>
+            <div class="submit-modal-actions">
+                <button class="submit-modal-btn cancel" onclick="closeSubmitModal()">Cancel</button>
+                <button class="submit-modal-btn confirm" onclick="confirmSubmit()">Submit Exam</button>
             </div>
         </div>
     </div>
@@ -502,8 +912,15 @@
                     }
                     
                     data = await response.json();
+
+                    // Handle server-side expiry
+                    if (data.expired && data.redirect) {
+                        window.removeEventListener('beforeunload', beforeUnloadHandler);
+                        window.location.href = data.redirect;
+                        return;
+                    }
                 }
-                
+
                 // Validate data
                 if (!data.questions || !Array.isArray(data.questions)) {
                     console.error('Invalid data received:', data);
@@ -598,9 +1015,12 @@
         async function selectAnswer(option) {
             const question = questions[currentQuestionIndex];
             answers[question.id] = option;
-            
+
+            loadQuestion(currentQuestionIndex);
+
             // Save answer to backend (skip in preview mode)
             if (!isPreview) {
+                showSaveIndicator('saving');
                 try {
                     await fetch(`/exam/${code}/session/${sessionId}/answer`, {
                         method: 'POST',
@@ -613,12 +1033,27 @@
                             answer: option
                         })
                     });
+                    showSaveIndicator('saved');
                 } catch (error) {
                     console.error('Error saving answer:', error);
+                    showSaveIndicator('error');
                 }
             }
-            
-            loadQuestion(currentQuestionIndex);
+        }
+
+        // Save indicator
+        function showSaveIndicator(state) {
+            const el = document.getElementById('saveIndicator');
+            el.className = 'save-indicator';
+
+            if (state === 'saving') {
+                el.textContent = 'Saving...';
+                el.classList.add('saving');
+            } else if (state === 'saved') {
+                el.textContent = 'Saved';
+                el.classList.add('saved');
+                setTimeout(() => { el.style.opacity = '0'; }, 1500);
+            }
         }
 
         // Navigation
@@ -647,30 +1082,87 @@
         }
 
         // Timer
+        let warningShown = false;
+        let dangerShown = false;
+
         function startTimer(expiresAt) {
             const endTime = new Date(expiresAt).getTime();
-            
-            timerInterval = setInterval(() => {
+
+            function updateTimer() {
                 const now = new Date().getTime();
                 const distance = endTime - now;
-                
-                if (distance < 0) {
+
+                if (distance <= 0) {
                     clearInterval(timerInterval);
-                    submitExam();
+                    document.getElementById('timerText').textContent = '00:00';
+                    // Auto-submit without confirmation when time expires
+                    autoSubmitExpired();
                     return;
                 }
-                
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                
-                document.getElementById('timerText').textContent = 
+
+                const totalSeconds = Math.floor(distance / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                const timerEl = document.getElementById('timer');
+
+                document.getElementById('timerText').textContent =
                     `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                // Warning when less than 5 minutes
-                if (minutes < 5) {
-                    document.getElementById('timer').classList.add('warning');
+
+                // 5 minute warning
+                if (totalSeconds <= 300 && !warningShown) {
+                    warningShown = true;
+                    timerEl.classList.add('warning');
+                    document.getElementById('warningBanner').classList.add('visible');
+                    setTimeout(() => {
+                        document.getElementById('warningBanner').classList.remove('visible');
+                    }, 5000);
                 }
-            }, 1000);
+
+                // 1 minute critical warning
+                if (totalSeconds <= 60 && !dangerShown) {
+                    dangerShown = true;
+                    timerEl.classList.remove('warning');
+                    timerEl.classList.add('danger');
+                    document.getElementById('warningBanner').classList.remove('visible');
+                    document.getElementById('dangerBanner').classList.add('visible');
+                }
+
+                // Hide danger banner at 30s (it's been visible long enough)
+                if (totalSeconds <= 30) {
+                    document.getElementById('dangerBanner').classList.remove('visible');
+                }
+            }
+
+            updateTimer(); // run immediately
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Auto-submit when time expires (no confirmation modal)
+        async function autoSubmitExpired() {
+            if (isPreview) return;
+
+            document.getElementById('submitOverlay').classList.add('visible');
+            document.querySelector('.submit-overlay-text').textContent = 'Time is up! Submitting your exam...';
+
+            try {
+                const response = await fetch(`/exam/${code}/session/${sessionId}/submit`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.removeEventListener('beforeunload', beforeUnloadHandler);
+                    window.location.href = result.redirect;
+                }
+            } catch (error) {
+                console.error('Error auto-submitting exam:', error);
+                document.getElementById('submitOverlay').classList.remove('visible');
+                alert('Failed to auto-submit. Please click Submit Exam manually.');
+            }
         }
 
         // Submit exam
@@ -684,15 +1176,16 @@
         }
 
         async function confirmSubmit() {
-            // Close modal
             closeSubmitModal();
-            
-            // Skip submission in preview mode
+
             if (isPreview) {
                 alert('This is a preview. Exam submission is disabled.');
                 return;
             }
-            
+
+            // Show loading overlay
+            document.getElementById('submitOverlay').classList.add('visible');
+
             try {
                 const response = await fetch(`/exam/${code}/session/${sessionId}/submit`, {
                     method: 'POST',
@@ -700,18 +1193,19 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     }
                 });
-                
+
                 const result = await response.json();
-                
+
                 if (result.success) {
-                    // Remove beforeunload listener to prevent "Leave site?" warning
                     window.removeEventListener('beforeunload', beforeUnloadHandler);
-                    
-                    // Redirect to results
                     window.location.href = result.redirect;
+                } else {
+                    document.getElementById('submitOverlay').classList.remove('visible');
+                    alert(result.error || 'Error submitting exam. Please try again.');
                 }
             } catch (error) {
                 console.error('Error submitting exam:', error);
+                document.getElementById('submitOverlay').classList.remove('visible');
                 alert('Error submitting exam. Please try again.');
             }
         }
@@ -810,6 +1304,15 @@
                 // You could log this to the server for monitoring
             }
         });
+
+        // Adjust crawler speed based on text length
+        const crawlerTrack = document.getElementById('crawlerTrack');
+        if (crawlerTrack) {
+            const textLen = crawlerTrack.textContent.trim().length;
+            const duration = Math.max(15, textLen * 0.2);
+            crawlerTrack.style.setProperty('--crawl-duration', duration + 's');
+            crawlerTrack.style.animationDuration = duration + 's';
+        }
 
         // Load exam on page load
         loadExam();

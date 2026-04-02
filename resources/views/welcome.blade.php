@@ -21,8 +21,7 @@
             <div class="container">
                 <nav class="homepage-nav">
                     <a href="/" class="homepage-logo">
-                        <div class="logo-icon">📝</div>
-                        <span>EzExam</span>
+                        <img src="/images/logo.png" alt="EzExam" class="logo-img">
                     </a>
                     @auth
                         <a href="{{ route('admin.dashboard') }}" class="admin-login-btn">

@@ -29,8 +29,7 @@
             <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-                    <div class="brand-icon">📝</div>
-                    <span class="brand-text">EzExam</span>
+                    <img src="/images/logo.png" alt="EzExam" style="height: 40px; width: auto; object-fit: contain;">
                 </a>
                 <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
                     <span id="toggleIcon">◀</span>
@@ -153,10 +152,21 @@
             <header class="top-bar">
                 <h1 class="page-title" id="pageTitle">Dashboard</h1>
                 <div class="top-bar-actions">
-                    <button class="action-btn" title="Notifications">
-                        <span>🔔</span>
-                        <span class="badge">3</span>
-                    </button>
+                    <div class="notif-wrapper" id="notifWrapper">
+                        <button class="action-btn" title="Notifications" onclick="toggleNotifications()">
+                            <span>🔔</span>
+                            <span class="badge" id="notifBadge" style="display: none;">0</span>
+                        </button>
+                        <div class="notif-dropdown" id="notifDropdown">
+                            <div class="notif-header">
+                                <span style="font-weight: 700; font-size: 0.9375rem;">Notifications</span>
+                                <button class="notif-mark-read" onclick="markAllRead()">Mark all read</button>
+                            </div>
+                            <div class="notif-list" id="notifList">
+                                <div class="notif-empty">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf
                         <button type="submit" class="logout-btn">Logout</button>
@@ -786,6 +796,35 @@
                         <button type="button" class="btn btn-secondary" onclick="resetSettings()">Reset</button>
                         <button type="button" class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
                     </div>
+
+                    <!-- Change Password -->
+                    <div class="card" style="margin-top: 1.5rem;">
+                        <div class="card-body">
+                            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.125rem; font-weight: 700;">Change Password</h3>
+                            <p style="margin: 0 0 1.5rem 0; color: var(--text-secondary); font-size: 0.875rem;">Update your account password. You will stay logged in after changing.</p>
+                            <form id="changePasswordForm" onsubmit="changePassword(event)">
+                                <div class="form-group">
+                                    <label class="form-label">Current Password</label>
+                                    <input type="password" class="form-control" id="currentPassword" required placeholder="Enter current password">
+                                    <span class="form-error" id="currentPasswordError" style="display: none;"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="newPassword" required placeholder="Enter new password" minlength="8">
+                                    <small style="color: var(--text-secondary); font-size: 0.75rem;">Minimum 8 characters</small>
+                                    <span class="form-error" id="newPasswordError" style="display: none;"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="confirmPassword" required placeholder="Confirm new password">
+                                    <span class="form-error" id="confirmPasswordError" style="display: none;"></span>
+                                </div>
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <button type="submit" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -834,6 +873,12 @@
                             <div class="form-group">
                                 <label class="form-label">Instructions</label>
                                 <textarea name="instructions" class="form-control" rows="3" placeholder="Exam instructions for students"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Announcement Crawler</label>
+                                <input type="text" name="crawler_text" class="form-control" placeholder="Scrolling message for students during exam (leave empty to hide)" maxlength="500">
+                                <small style="color: var(--text-secondary); font-size: 0.7rem;">This text scrolls at the top of the exam page. Use it to inform students about important updates.</small>
                             </div>
 
                             <div class="form-group">
@@ -1591,6 +1636,7 @@
             form.questions_per_exam.value = classroom.questions_per_exam;
             form.timer_minutes.value = classroom.timer_minutes || '';
             form.instructions.value = classroom.instructions || '';
+            form.crawler_text.value = classroom.crawler_text || '';
             form.show_results_immediately.checked = classroom.show_results_immediately;
             form.show_correct_answers.checked = classroom.show_correct_answers;
             form.allow_review.checked = classroom.allow_review;
@@ -1921,6 +1967,7 @@
                 questions_per_exam: parseInt(formData.get('questions_per_exam')),
                 timer_minutes: formData.get('timer_minutes') ? parseInt(formData.get('timer_minutes')) : null,
                 instructions: formData.get('instructions'),
+                crawler_text: formData.get('crawler_text') || null,
                 show_results_immediately: formData.get('show_results_immediately') === 'on',
                 show_correct_answers: formData.get('show_correct_answers') === 'on',
                 allow_review: formData.get('allow_review') === 'on',
@@ -3611,6 +3658,75 @@
             showNotification('Settings reset to defaults', 'success');
         }
 
+        // Change Password
+        async function changePassword(e) {
+            e.preventDefault();
+
+            // Clear previous errors
+            document.getElementById('currentPasswordError').style.display = 'none';
+            document.getElementById('newPasswordError').style.display = 'none';
+            document.getElementById('confirmPasswordError').style.display = 'none';
+
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword.length < 8) {
+                document.getElementById('newPasswordError').textContent = 'Password must be at least 8 characters';
+                document.getElementById('newPasswordError').style.display = 'block';
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = 'Passwords do not match';
+                document.getElementById('confirmPasswordError').style.display = 'block';
+                return;
+            }
+
+            const btn = document.getElementById('changePasswordBtn');
+            btn.disabled = true;
+            btn.textContent = 'Changing...';
+
+            try {
+                const response = await fetch('/admin/api/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        current_password: currentPassword,
+                        password: newPassword,
+                        password_confirmation: confirmPassword
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    if (data.errors?.current_password) {
+                        document.getElementById('currentPasswordError').textContent = data.errors.current_password[0];
+                        document.getElementById('currentPasswordError').style.display = 'block';
+                    }
+                    if (data.errors?.password) {
+                        document.getElementById('newPasswordError').textContent = data.errors.password[0];
+                        document.getElementById('newPasswordError').style.display = 'block';
+                    }
+                    return;
+                }
+
+                // Clear form
+                document.getElementById('changePasswordForm').reset();
+                showNotification('Password changed successfully', 'success');
+            } catch (error) {
+                console.error('Error changing password:', error);
+                showNotification('Error changing password. Please try again.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Change Password';
+            }
+        }
+
         function loadSettings() {
             const saved = localStorage.getItem('systemSettings');
             if (saved) {
@@ -3637,6 +3753,93 @@
 
         // Load stats on page load
         loadDashboardStats();
+
+        // ==========================================
+        // NOTIFICATIONS
+        // ==========================================
+        let notifLastSeen = localStorage.getItem('notifLastSeen') || '2000-01-01T00:00:00';
+
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notifDropdown');
+            dropdown.classList.toggle('open');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const wrapper = document.getElementById('notifWrapper');
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById('notifDropdown').classList.remove('open');
+            }
+        });
+
+        function markAllRead() {
+            localStorage.setItem('notifLastSeen', new Date().toISOString());
+            document.querySelectorAll('.notif-item.unread').forEach(el => el.classList.remove('unread'));
+            document.getElementById('notifBadge').style.display = 'none';
+        }
+
+        function timeAgo(dateStr) {
+            const now = new Date();
+            const date = new Date(dateStr);
+            const diff = Math.floor((now - date) / 1000);
+            if (diff < 60) return 'just now';
+            if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+            if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+            return Math.floor(diff / 86400) + 'd ago';
+        }
+
+        async function loadNotifications() {
+            try {
+                const response = await fetch('/admin/api/exam-sessions');
+                const data = await response.json();
+
+                const sessions = (data.sessions || data)
+                    .filter(s => s.completed_at)
+                    .sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at))
+                    .slice(0, 10);
+
+                const list = document.getElementById('notifList');
+                const lastSeen = new Date(notifLastSeen);
+                let unreadCount = 0;
+
+                if (sessions.length === 0) {
+                    list.innerHTML = '<div class="notif-empty">No notifications yet</div>';
+                    return;
+                }
+
+                list.innerHTML = sessions.map(s => {
+                    const isUnread = new Date(s.completed_at) > lastSeen;
+                    if (isUnread) unreadCount++;
+                    const score = s.score !== null ? s.score + '%' : 'N/A';
+                    const passed = s.score >= 50;
+                    const studentName = s.student ? s.student.name : 'A student';
+                    const classroomName = s.classroom ? s.classroom.name : 'an exam';
+
+                    return `
+                        <div class="notif-item ${isUnread ? 'unread' : ''}">
+                            <div class="notif-icon ${passed ? 'success' : 'warning'}">${passed ? '✅' : '⚠️'}</div>
+                            <div class="notif-body">
+                                <div class="notif-text"><strong>${studentName}</strong> completed <strong>${classroomName}</strong> with score <strong>${score}</strong></div>
+                                <div class="notif-time">${timeAgo(s.completed_at)}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const badge = document.getElementById('notifBadge');
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                document.getElementById('notifList').innerHTML = '<div class="notif-empty">Failed to load</div>';
+            }
+        }
+
+        loadNotifications();
     </script>
 
     <!-- Footer -->

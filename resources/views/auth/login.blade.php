@@ -33,8 +33,7 @@
                     <div class="auth-brand">
                         <div class="brand-content">
                             <div class="brand-logo">
-                                <div class="logo-icon-large">📝</div>
-                                <h1 class="brand-title">EzExam</h1>
+                                <img src="/images/logo.png" alt="EzExam" style="height: 80px; width: auto; margin-bottom: 1rem;">
                                 <p class="brand-tagline">Admin Portal</p>
                             </div>
                         </div>
@@ -130,7 +129,7 @@
                                 <div class="captcha-wrapper">
                                     <div class="captcha-question">
                                         <span class="captcha-text">What is</span>
-                                        <span class="captcha-math" id="captchaQuestion">{{ session('captcha_num1', rand(1, 10)) }} + {{ session('captcha_num2', rand(1, 10)) }}</span>
+                                        <span class="captcha-math" id="captchaQuestion">{{ session('captcha_num1') }} {{ session('captcha_operator', '+') }} {{ session('captcha_num2') }}</span>
                                         <span class="captcha-text">?</span>
                                         <button type="button" class="captcha-refresh" id="refreshCaptcha" title="Refresh">
                                             🔄
@@ -190,25 +189,22 @@
         const captchaInput = document.getElementById('captcha');
 
         refreshCaptcha.addEventListener('click', function() {
-            // Generate new random numbers
-            const num1 = Math.floor(Math.random() * 10) + 1;
-            const num2 = Math.floor(Math.random() * 10) + 1;
-            
-            // Update display
-            captchaQuestion.textContent = `${num1} + ${num2}`;
             captchaInput.value = '';
-            captchaInput.focus();
-            
-            // Store in session via AJAX
+
+            // Request new captcha from server (numbers generated server-side only)
             fetch('{{ route('captcha.refresh') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ num1, num2 })
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                captchaQuestion.textContent = `${data.num1} ${data.operator} ${data.num2}`;
+                captchaInput.focus();
             });
-            
+
             // Animate refresh button
             refreshCaptcha.style.transform = 'rotate(360deg)';
             setTimeout(() => {

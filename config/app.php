@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | This value is the current version of the application. It follows
+    | Semantic Versioning (major.minor.patch). Update this value when
+    | releasing new versions of the application.
+    |
+    */
+
+    'version' => '1.2.0',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

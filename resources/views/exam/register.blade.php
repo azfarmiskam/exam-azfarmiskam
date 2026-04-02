@@ -185,7 +185,8 @@
 <body>
     <div class="register-container">
         <div class="header">
-            <h1>📝 Student Registration</h1>
+            <img src="/images/logo.png" alt="EzExam" style="height: 64px; width: auto; margin-bottom: 0.75rem;">
+            <h1>Student Registration</h1>
             <p>Please fill in your details to start the exam</p>
         </div>
 

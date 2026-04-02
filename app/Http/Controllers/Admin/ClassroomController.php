@@ -37,6 +37,7 @@ class ClassroomController extends Controller
             'show_correct_answers' => 'boolean',
             'allow_review' => 'boolean',
             'instructions' => 'nullable|string',
+            'crawler_text' => 'nullable|string|max:500',
             'is_active' => 'boolean',
         ]);
 
@@ -84,6 +85,7 @@ class ClassroomController extends Controller
             'show_correct_answers' => 'boolean',
             'allow_review' => 'boolean',
             'instructions' => 'nullable|string',
+            'crawler_text' => 'nullable|string|max:500',
             'is_active' => 'boolean',
         ]);
 
