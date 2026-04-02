@@ -187,48 +187,109 @@
             <div class="content-area">
                 <!-- Dashboard Content -->
                 <div class="spa-content active" id="page-dashboard">
+                    <!-- Stat Cards -->
                     <div class="dashboard-grid">
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">🏫</div>
+                        <div class="stat-card" style="border-left: 4px solid #3b82f6;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <div class="stat-label">Total Classrooms</div>
+                                    <div class="stat-value" id="totalClassrooms">0</div>
+                                </div>
+                                <div style="width: 48px; height: 48px; background: #eff6ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🏫</div>
                             </div>
-                            <div class="stat-value" id="totalClassrooms">0</div>
-                            <div class="stat-label">Total Classrooms</div>
-                            <div class="stat-change positive">↑ 0 this month</div>
+                            <div class="stat-change" id="classroomsActive" style="margin-top: 0.5rem;">0 active</div>
                         </div>
 
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">❓</div>
+                        <div class="stat-card" style="border-left: 4px solid #8b5cf6;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <div class="stat-label">Question Bank</div>
+                                    <div class="stat-value" id="totalQuestions">0</div>
+                                </div>
+                                <div style="width: 48px; height: 48px; background: #f5f3ff; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">❓</div>
                             </div>
-                            <div class="stat-value" id="totalQuestions">0</div>
-                            <div class="stat-label">Question Bank</div>
-                            <div class="stat-change positive">↑ 0 this month</div>
+                            <div class="stat-change" id="questionsCategories" style="margin-top: 0.5rem;">0 categories</div>
                         </div>
 
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">👥</div>
+                        <div class="stat-card" style="border-left: 4px solid #10b981;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <div class="stat-label">Total Students</div>
+                                    <div class="stat-value" id="totalStudents">0</div>
+                                </div>
+                                <div style="width: 48px; height: 48px; background: #ecfdf5; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">🎓</div>
                             </div>
-                            <div class="stat-value" id="totalStudents">0</div>
-                            <div class="stat-label">Total Students</div>
-                            <div class="stat-change positive">↑ 0 this month</div>
+                            <div class="stat-change" id="studentsExamsTaken" style="margin-top: 0.5rem;">0 exams taken</div>
                         </div>
 
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <div class="stat-icon">📝</div>
+                        <div class="stat-card" style="border-left: 4px solid #f59e0b;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <div class="stat-label">Pass Rate</div>
+                                    <div class="stat-value" id="passRate">0%</div>
+                                </div>
+                                <div style="width: 48px; height: 48px; background: #fffbeb; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">📊</div>
                             </div>
-                            <div class="stat-value" id="totalExams">0</div>
-                            <div class="stat-label">Exams Taken</div>
-                            <div class="stat-change positive">↑ 0 this week</div>
+                            <div class="stat-change" id="avgScore" style="margin-top: 0.5rem;">Avg: 0%</div>
                         </div>
                     </div>
 
-                    <div class="card">
-                        <div class="card-body">
-                            <h3>Welcome to ExamJe Admin Dashboard!</h3>
-                            <p>Get started by creating your first classroom or adding questions to the question bank.</p>
+                    <!-- Two column layout -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+
+                        <!-- Quick Actions -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 style="margin: 0 0 1rem 0; font-size: 1.0625rem; font-weight: 700;">Quick Actions</h3>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                                    <a href="#" class="quick-action" style="background: #eff6ff; color: #1e40af;" onclick="event.preventDefault(); document.querySelector('[data-page=classrooms]').click(); setTimeout(()=>document.querySelector('[onclick*=openClassroomModal]')?.click(), 300);">
+                                        <span style="font-size: 1.25rem;">🏫</span> New Classroom
+                                    </a>
+                                    <a href="#" class="quick-action" style="background: #f5f3ff; color: #6d28d9;" onclick="event.preventDefault(); document.querySelector('[data-page=questions]').click(); setTimeout(()=>openCreateQuestionModal(), 300);">
+                                        <span style="font-size: 1.25rem;">❓</span> Add Question
+                                    </a>
+                                    <a href="#" class="quick-action" style="background: #ecfdf5; color: #065f46;" onclick="event.preventDefault(); document.querySelector('[data-page=questions]').click(); setTimeout(()=>openImportModal(), 300);">
+                                        <span style="font-size: 1.25rem;">📤</span> Import CSV
+                                    </a>
+                                    <a href="#" class="quick-action" style="background: #fff7ed; color: #9a3412;" onclick="event.preventDefault(); document.querySelector('[data-page=announcements]').click();">
+                                        <span style="font-size: 1.25rem;">📢</span> Announcement
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Classrooms -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <h3 style="margin: 0; font-size: 1.0625rem; font-weight: 700;">Active Classrooms</h3>
+                                    <a href="#" onclick="event.preventDefault(); document.querySelector('[data-page=classrooms]').click();" style="font-size: 0.75rem; color: var(--primary); font-weight: 600; text-decoration: none;">View all</a>
+                                </div>
+                                <div id="dashActiveClassrooms" style="font-size: 0.8125rem; color: var(--text-secondary);">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Exams + Performance -->
+                    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+
+                        <!-- Recent Exam Results -->
+                        <div class="card">
+                            <div class="card-body">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <h3 style="margin: 0; font-size: 1.0625rem; font-weight: 700;">Recent Exam Results</h3>
+                                    <a href="#" onclick="event.preventDefault(); document.querySelector('[data-page=results]').click();" style="font-size: 0.75rem; color: var(--primary); font-weight: 600; text-decoration: none;">View all</a>
+                                </div>
+                                <div id="dashRecentResults" style="font-size: 0.8125rem; color: var(--text-secondary);">Loading...</div>
+                            </div>
+                        </div>
+
+                        <!-- Score Distribution -->
+                        <div class="card">
+                            <div class="card-body">
+                                <h3 style="margin: 0 0 1rem 0; font-size: 1.0625rem; font-weight: 700;">Score Distribution</h3>
+                                <div id="dashScoreDist" style="font-size: 0.8125rem; color: var(--text-secondary);">Loading...</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3351,35 +3412,135 @@
             });
         });
 
-        // Load dashboard stats (placeholder - will be replaced with API calls)
         async function loadDashboardStats() {
             try {
-                // Fetch all data in parallel
-                const [classroomsRes, questionsRes, studentsRes, sessionsRes] = await Promise.all([
+                const [classroomsRes, questionsRes, studentsRes, sessionsRes, categoriesRes] = await Promise.all([
                     fetch('/admin/api/classrooms'),
                     fetch('/admin/api/questions'),
                     fetch('/admin/api/students'),
-                    fetch('/admin/api/exam-sessions')
+                    fetch('/admin/api/exam-sessions'),
+                    fetch('/admin/api/categories')
                 ]);
 
-                const classrooms = await classroomsRes.json();
-                const questions = await questionsRes.json();
-                const students = await studentsRes.json();
-                const sessions = await sessionsRes.json();
+                const classroomsData = await classroomsRes.json();
+                const questionsData = await questionsRes.json();
+                const studentsData = await studentsRes.json();
+                const sessionsData = await sessionsRes.json();
+                const categoriesData = await categoriesRes.json();
 
-                // Update stat cards
-                document.getElementById('totalClassrooms').textContent = classrooms.classrooms?.length || 0;
-                document.getElementById('totalQuestions').textContent = questions.questions?.length || 0;
-                document.getElementById('totalStudents').textContent = students.students?.length || 0;
-                document.getElementById('totalExams').textContent = sessions.sessions?.length || 0;
+                const cls = classroomsData.classrooms || [];
+                const qs = questionsData.questions || [];
+                const sts = studentsData.students || [];
+                const sess = sessionsData.sessions || [];
+                const cats = categoriesData.categories || [];
+                const completed = sess.filter(s => s.completed_at);
+
+                // Stat cards
+                document.getElementById('totalClassrooms').textContent = cls.length;
+                document.getElementById('classroomsActive').textContent = cls.filter(c => c.is_active).length + ' active';
+                document.getElementById('totalQuestions').textContent = qs.length;
+                document.getElementById('questionsCategories').textContent = cats.length + ' categories';
+                document.getElementById('totalStudents').textContent = sts.length;
+                document.getElementById('studentsExamsTaken').textContent = completed.length + ' exams taken';
+
+                // Pass rate & avg score
+                if (completed.length > 0) {
+                    const scores = completed.map(s => s.score || 0);
+                    const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+                    const passed = scores.filter(s => s >= 50).length;
+                    const passRate = Math.round((passed / completed.length) * 100);
+                    document.getElementById('passRate').textContent = passRate + '%';
+                    document.getElementById('avgScore').textContent = 'Avg: ' + avg.toFixed(1) + '%';
+                }
+
+                // Active classrooms list
+                const activeClassrooms = cls.filter(c => c.is_active).slice(0, 5);
+                const aclEl = document.getElementById('dashActiveClassrooms');
+                if (activeClassrooms.length === 0) {
+                    aclEl.innerHTML = '<div style="text-align: center; padding: 1.5rem; color: var(--text-light);">No active classrooms. Create one to get started.</div>';
+                } else {
+                    aclEl.innerHTML = activeClassrooms.map(c => `
+                        <div class="dash-classroom-item">
+                            <div>
+                                <div style="font-weight: 600; color: var(--text-primary);">${c.name}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-light);">Code: <strong>${c.code}</strong> &middot; ${c.questions_count || 0} questions &middot; ${c.students_count || 0} students</div>
+                            </div>
+                            <span class="badge badge-success" style="font-size: 0.625rem;">Active</span>
+                        </div>
+                    `).join('');
+                }
+
+                // Recent exam results (last 8)
+                const recent = completed.sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at)).slice(0, 8);
+                const recentEl = document.getElementById('dashRecentResults');
+                if (recent.length === 0) {
+                    recentEl.innerHTML = '<div style="text-align: center; padding: 1.5rem; color: var(--text-light);">No exams completed yet.</div>';
+                } else {
+                    recentEl.innerHTML = '<table style="width: 100%; border-collapse: collapse;">' +
+                        '<thead><tr style="border-bottom: 2px solid var(--bg-light);">' +
+                        '<th style="text-align: left; padding: 0.5rem; font-size: 0.6875rem; color: var(--text-light); text-transform: uppercase;">Student</th>' +
+                        '<th style="text-align: left; padding: 0.5rem; font-size: 0.6875rem; color: var(--text-light); text-transform: uppercase;">Classroom</th>' +
+                        '<th style="text-align: center; padding: 0.5rem; font-size: 0.6875rem; color: var(--text-light); text-transform: uppercase;">Score</th>' +
+                        '<th style="text-align: right; padding: 0.5rem; font-size: 0.6875rem; color: var(--text-light); text-transform: uppercase;">Date</th>' +
+                        '</tr></thead><tbody>' +
+                        recent.map(s => {
+                            const score = s.score !== null ? s.score : 0;
+                            const scoreColor = score >= 70 ? '#10b981' : score >= 50 ? '#f59e0b' : '#ef4444';
+                            const date = new Date(s.completed_at);
+                            const timeAgo = getTimeAgo(date);
+                            return `<tr class="dash-table-row" style="border-bottom: 1px solid var(--bg-light); cursor: default;">
+                                <td style="padding: 0.5rem; font-weight: 500;">${s.student?.name || 'Unknown'}</td>
+                                <td style="padding: 0.5rem; color: var(--text-secondary);">${s.classroom?.name || 'Unknown'}</td>
+                                <td style="padding: 0.5rem; text-align: center;"><span style="background: ${scoreColor}15; color: ${scoreColor}; padding: 0.125rem 0.5rem; border-radius: 1rem; font-weight: 700; font-size: 0.75rem;">${score}%</span></td>
+                                <td style="padding: 0.5rem; text-align: right; color: var(--text-light); font-size: 0.75rem;">${timeAgo}</td>
+                            </tr>`;
+                        }).join('') +
+                        '</tbody></table>';
+                }
+
+                // Score distribution
+                const distEl = document.getElementById('dashScoreDist');
+                if (completed.length === 0) {
+                    distEl.innerHTML = '<div style="text-align: center; padding: 1.5rem; color: var(--text-light);">No data yet.</div>';
+                } else {
+                    const ranges = [
+                        { label: '90-100%', min: 90, max: 100, color: '#10b981' },
+                        { label: '70-89%', min: 70, max: 89, color: '#3b82f6' },
+                        { label: '50-69%', min: 50, max: 69, color: '#f59e0b' },
+                        { label: '0-49%', min: 0, max: 49, color: '#ef4444' },
+                    ];
+                    const maxCount = Math.max(...ranges.map(r => completed.filter(s => s.score >= r.min && s.score <= r.max).length), 1);
+
+                    distEl.innerHTML = ranges.map(r => {
+                        const count = completed.filter(s => s.score >= r.min && s.score <= r.max).length;
+                        const pct = (count / maxCount) * 100;
+                        return `
+                            <div style="margin-bottom: 0.75rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span style="font-weight: 600; font-size: 0.75rem;">${r.label}</span>
+                                    <span style="color: var(--text-light); font-size: 0.75rem;">${count} student${count !== 1 ? 's' : ''}</span>
+                                </div>
+                                <div style="height: 8px; background: var(--bg-light); border-radius: 4px; overflow: hidden;">
+                                    <div style="height: 100%; width: ${pct}%; background: ${r.color}; border-radius: 4px; transition: width 0.8s ease;"></div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
             } catch (error) {
                 console.error('Error loading dashboard stats:', error);
-                // Keep showing 0 if there's an error
-                document.getElementById('totalClassrooms').textContent = '0';
-                document.getElementById('totalQuestions').textContent = '0';
-                document.getElementById('totalStudents').textContent = '0';
-                document.getElementById('totalExams').textContent = '0';
             }
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            if (diff < 60) return 'just now';
+            if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+            if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+            if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+            return date.toLocaleDateString();
         }
 
         // ==========================================
