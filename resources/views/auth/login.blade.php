@@ -33,7 +33,7 @@
                     <div class="auth-brand">
                         <div class="brand-content">
                             <div class="brand-logo">
-                                <img src="/images/logo.png" alt="EzExam" style="height: 80px; width: auto; margin-bottom: 1rem;">
+                                <img src="{{ $logoUrl }}" alt="EzExam" style="height: 80px; width: auto; margin-bottom: 1rem;">
                                 <p class="brand-tagline">Admin Portal</p>
                             </div>
                         </div>

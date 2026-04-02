@@ -185,7 +185,7 @@
 <body>
     <div class="register-container">
         <div class="header">
-            <img src="/images/logo.png" alt="EzExam" style="height: 64px; width: auto; margin-bottom: 0.75rem;">
+            <img src="{{ $logoUrl }}" alt="EzExam" style="height: 64px; width: auto; margin-bottom: 0.75rem;">
             <h1>Student Registration</h1>
             <p>Please fill in your details to start the exam</p>
         </div>

@@ -375,7 +375,7 @@ class ExamController extends Controller
         $announcements = Announcement::where('classroom_id', $classroom->id)
             ->active()
             ->latest()
-            ->get(['id', 'message', 'expires_at']);
+            ->get(['id', 'message', 'expires_at', 'repeat_interval']);
 
         return response()->json(['announcements' => $announcements]);
     }

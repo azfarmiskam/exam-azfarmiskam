@@ -719,11 +719,15 @@
         }
         /* Announcement Crawler */
         .crawler-bar {
-            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.9) 0%, rgba(59, 130, 246, 0.9) 100%);
             overflow: hidden;
             white-space: nowrap;
-            position: relative;
-            z-index: 99;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 150;
+            pointer-events: none;
         }
 
         .crawler-track {
@@ -1302,46 +1306,77 @@
             }
         });
 
-        // Announcement polling
-        let lastAnnouncementIds = [];
+        // Announcement polling with repeat interval
+        let lastAnnouncementData = '';
+        let crawlerHideTimer = null;
+        let crawlerShowTimer = null;
+        let currentRepeatInterval = 0;
+
+        function showCrawler(announcements) {
+            const bar = document.getElementById('crawlerBar');
+            const track = document.getElementById('crawlerTrack');
+
+            const messages = announcements.map(a =>
+                `<span class="crawler-text">${a.message}</span>`
+            ).join('');
+
+            track.innerHTML = messages + messages;
+
+            const textLen = track.textContent.trim().length;
+            const scrollDuration = Math.max(10, textLen * 0.15);
+            track.style.animationDuration = scrollDuration + 's';
+
+            bar.style.display = 'block';
+
+            // Get the shortest repeat interval from all announcements
+            const intervals = announcements.map(a => a.repeat_interval || 0).filter(i => i > 0);
+            currentRepeatInterval = intervals.length > 0 ? Math.min(...intervals) : 0;
+
+            // If repeat is set, hide after one scroll cycle then show again after interval
+            if (currentRepeatInterval > 0) {
+                clearTimeout(crawlerHideTimer);
+                clearTimeout(crawlerShowTimer);
+
+                // Hide after the scroll completes once
+                crawlerHideTimer = setTimeout(() => {
+                    bar.style.display = 'none';
+
+                    // Show again after the repeat interval
+                    crawlerShowTimer = setTimeout(() => {
+                        showCrawler(announcements);
+                    }, currentRepeatInterval * 1000);
+                }, scrollDuration * 1000);
+            }
+        }
 
         function pollAnnouncements() {
-            if (isPreview) return;
-
             fetch(`/exam/${code}/announcements`)
                 .then(r => r.json())
                 .then(data => {
                     const bar = document.getElementById('crawlerBar');
-                    const track = document.getElementById('crawlerTrack');
 
                     if (!data.announcements || data.announcements.length === 0) {
                         bar.style.display = 'none';
-                        lastAnnouncementIds = [];
+                        clearTimeout(crawlerHideTimer);
+                        clearTimeout(crawlerShowTimer);
+                        lastAnnouncementData = '';
                         return;
                     }
 
-                    const currentIds = data.announcements.map(a => a.id).join(',');
-                    if (currentIds === lastAnnouncementIds.join(',')) return;
-                    lastAnnouncementIds = data.announcements.map(a => a.id);
+                    const dataKey = data.announcements.map(a => a.id + ':' + a.repeat_interval).join(',');
+                    if (dataKey === lastAnnouncementData) return;
+                    lastAnnouncementData = dataKey;
 
-                    const messages = data.announcements.map(a =>
-                        `<span class="crawler-text">${a.message}</span>`
-                    ).join('');
+                    clearTimeout(crawlerHideTimer);
+                    clearTimeout(crawlerShowTimer);
 
-                    track.innerHTML = messages + messages;
-
-                    const textLen = track.textContent.trim().length;
-                    const duration = Math.max(15, textLen * 0.15) + 's';
-                    track.style.animationDuration = duration;
-
-                    bar.style.display = 'block';
+                    showCrawler(data.announcements);
                 })
                 .catch(() => {});
         }
 
-        // Poll every 15 seconds
         pollAnnouncements();
-        setInterval(pollAnnouncements, 15000);
+        setInterval(pollAnnouncements, 5000);
 
         // Load exam on page load
         loadExam();
@@ -1349,7 +1384,7 @@
 
     <!-- Footer -->
     <div style="text-align: center; padding: 1rem 0; color: #718096; font-size: 0.8125rem; background: white; border-top: 1px solid #e2e8f0;">
-        © {{ date('Y') }} EzExam by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved.
+        © {{ date('Y') }} EzExam by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved. v{{ config('app.version') }}
     </div>
 </body>
 </html>

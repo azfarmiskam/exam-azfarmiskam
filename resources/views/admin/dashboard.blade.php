@@ -29,7 +29,7 @@
             <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-                    <img src="/images/logo.png" alt="EzExam" style="height: 40px; width: auto; object-fit: contain;">
+                    <img src="{{ $logoUrl }}" alt="EzExam" style="height: 40px; width: auto; object-fit: contain;">
                 </a>
                 <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
                     <span id="toggleIcon">◀</span>
@@ -744,16 +744,33 @@
                                     <label class="form-label">Message</label>
                                     <input type="text" name="message" class="form-control" placeholder="Type your announcement message..." maxlength="500" required>
                                 </div>
-                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: flex-end;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: flex-end;">
                                     <div class="form-group" style="margin: 0;">
                                         <label class="form-label">Duration</label>
                                         <select name="duration" class="form-control">
-                                            <option value="5">5 minutes</option>
+                                            <option value="1">1 minute</option>
+                                            <option value="2">2 minutes</option>
+                                            <option value="3">3 minutes</option>
+                                            <option value="4">4 minutes</option>
+                                            <option value="5" selected>5 minutes</option>
                                             <option value="10">10 minutes</option>
-                                            <option value="15" selected>15 minutes</option>
+                                            <option value="15">15 minutes</option>
+                                            <option value="20">20 minutes</option>
                                             <option value="30">30 minutes</option>
-                                            <option value="60">1 hour</option>
-                                            <option value="120">2 hours</option>
+                                            <option value="40">40 minutes</option>
+                                            <option value="50">50 minutes</option>
+                                            <option value="60">60 minutes</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group" style="margin: 0;">
+                                        <label class="form-label">Repeat Interval</label>
+                                        <select name="repeat_interval" class="form-control">
+                                            <option value="0">No repeat (show once)</option>
+                                            <option value="15">Every 15 seconds</option>
+                                            <option value="30" selected>Every 30 seconds</option>
+                                            <option value="60">Every 1 minute</option>
+                                            <option value="120">Every 2 minutes</option>
+                                            <option value="300">Every 5 minutes</option>
                                         </select>
                                     </div>
                                     <button type="submit" class="btn btn-primary" style="width: auto; white-space: nowrap;" id="sendAnnouncementBtn">
@@ -895,6 +912,29 @@
                     <div style="display: flex; justify-content: flex-end; gap: 1rem;">
                         <button type="button" class="btn btn-secondary" onclick="resetSettings()">Reset</button>
                         <button type="button" class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+                    </div>
+
+                    <!-- System Logo -->
+                    <div class="card" style="margin-top: 1.5rem;">
+                        <div class="card-body">
+                            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.125rem; font-weight: 700;">System Logo</h3>
+                            <p style="margin: 0 0 1.25rem 0; color: var(--text-secondary); font-size: 0.875rem;">Upload your own logo. It will replace the default logo across all pages.</p>
+                            <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+                                <div style="background: var(--bg-light); border-radius: 8px; padding: 1rem; display: flex; align-items: center; justify-content: center; min-width: 120px;">
+                                    <img src="{{ $logoUrl }}" alt="Current Logo" id="logoPreview" style="height: 60px; width: auto; object-fit: contain;">
+                                </div>
+                                <div>
+                                    <p style="font-size: 0.75rem; color: var(--text-light); margin-bottom: 0.5rem;">PNG, JPG, SVG, or WebP. Max 2MB.</p>
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                        <label class="btn btn-primary" style="width: auto; cursor: pointer; font-size: 0.8125rem; padding: 0.5rem 1rem;">
+                                            Upload Logo
+                                            <input type="file" id="logoFile" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display: none;" onchange="uploadLogo()">
+                                        </label>
+                                        <button type="button" class="btn btn-secondary" style="width: auto; font-size: 0.8125rem; padding: 0.5rem 1rem;" onclick="resetLogo()">Reset to Default</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Change Password -->
@@ -3966,6 +4006,7 @@
                         classroom_id: parseInt(formData.get('classroom_id')),
                         message: formData.get('message'),
                         duration: parseInt(formData.get('duration')),
+                        repeat_interval: parseInt(formData.get('repeat_interval')),
                     })
                 });
 
@@ -4041,6 +4082,59 @@
             
             localStorage.removeItem('systemSettings');
             showNotification('Settings reset to defaults', 'success');
+        }
+
+        // Upload Logo
+        async function uploadLogo() {
+            const fileInput = document.getElementById('logoFile');
+            if (!fileInput.files.length) return;
+
+            const formData = new FormData();
+            formData.append('logo', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/admin/api/upload-logo', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('logoPreview').src = result.logo_url;
+                    showNotification(result.message, 'success');
+                } else {
+                    showNotification(result.message || 'Upload failed', 'error');
+                }
+            } catch (error) {
+                showNotification('Failed to upload logo', 'error');
+            }
+            fileInput.value = '';
+        }
+
+        async function resetLogo() {
+            if (!confirm('Reset logo to default?')) return;
+
+            try {
+                const response = await fetch('/admin/api/reset-logo', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    document.getElementById('logoPreview').src = result.logo_url;
+                    showNotification(result.message, 'success');
+                }
+            } catch (error) {
+                showNotification('Failed to reset logo', 'error');
+            }
         }
 
         // Change Password
@@ -4233,7 +4327,7 @@
 
     <!-- Footer -->
     <div style="position: fixed; bottom: 0; right: 0; left: 250px; text-align: center; padding: 0.75rem 0; color: var(--text-secondary); font-size: 0.75rem; background: var(--bg-primary); border-top: 1px solid var(--border-color); z-index: 5; transition: left 0.3s ease;">
-        © {{ date('Y') }} EzExam by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved.
+        © {{ date('Y') }} EzExam by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved. v{{ config('app.version') }}
     </div>
 </body>
 </html>

@@ -98,6 +98,8 @@ Route::middleware(['auth', 'no-cache'])->prefix('admin/api')->name('admin.api.')
     // Admin Users
     Route::apiResource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::post('change-password', [\App\Http\Controllers\Admin\UserController::class, 'changePassword'])->name('change-password');
+    Route::post('upload-logo', [\App\Http\Controllers\Admin\UserController::class, 'uploadLogo'])->name('upload-logo');
+    Route::post('reset-logo', [\App\Http\Controllers\Admin\UserController::class, 'resetLogo'])->name('reset-logo');
 });
 
 

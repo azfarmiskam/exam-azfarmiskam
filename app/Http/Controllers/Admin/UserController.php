@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
 class UserController extends Controller
@@ -98,6 +99,47 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Password changed successfully'
+        ]);
+    }
+
+    /**
+     * Upload system logo
+     */
+    public function uploadLogo(Request $request)
+    {
+        $request->validate([
+            'logo' => 'required|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
+        ]);
+
+        // Delete old custom logo if exists
+        if (Storage::disk('public')->exists('logo.png')) {
+            Storage::disk('public')->delete('logo.png');
+        }
+
+        // Store as logo.png
+        $file = $request->file('logo');
+        $file->storeAs('', 'logo.png', 'public');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logo updated successfully',
+            'logo_url' => '/storage/logo.png?t=' . time(),
+        ]);
+    }
+
+    /**
+     * Reset logo to default
+     */
+    public function resetLogo()
+    {
+        if (Storage::disk('public')->exists('logo.png')) {
+            Storage::disk('public')->delete('logo.png');
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logo reset to default',
+            'logo_url' => '/images/logo.png',
         ]);
     }
 

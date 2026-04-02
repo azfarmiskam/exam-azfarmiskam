@@ -21,7 +21,7 @@
             <div class="container">
                 <nav class="homepage-nav">
                     <a href="/" class="homepage-logo">
-                        <img src="/images/logo.png" alt="EzExam" class="logo-img">
+                        <img src="{{ $logoUrl }}" alt="EzExam" class="logo-img">
                     </a>
                     @auth
                         <a href="{{ route('admin.dashboard') }}" class="admin-login-btn">
@@ -109,7 +109,7 @@
         <!-- Footer -->
         <footer class="homepage-footer">
             <div class="container">
-                <p>&copy; {{ date('Y') }} EzExam by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} EzExam by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved. v{{ config('app.version') }}</p>
             </div>
         </footer>
     </div>

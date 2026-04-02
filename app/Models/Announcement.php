@@ -11,6 +11,7 @@ class Announcement extends Model
         'classroom_id',
         'message',
         'expires_at',
+        'repeat_interval',
         'is_active',
         'created_by',
     ];
