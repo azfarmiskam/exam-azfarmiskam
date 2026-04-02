@@ -173,6 +173,9 @@
                             </div>
                         </div>
                     </div>
+                    <a href="/tutorial.html" target="_blank" class="action-btn" title="Tutorial" style="text-decoration: none;">
+                        <span>📖</span>
+                    </a>
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf
                         <button type="submit" class="logout-btn">Logout</button>

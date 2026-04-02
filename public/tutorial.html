@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzExam - Teacher Tutorial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.7;
+        }
+
+        /* Header */
+        .hero {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #667eea 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .hero img { height: 72px; margin-bottom: 1rem; }
+        .hero h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .hero p { font-size: 1.0625rem; opacity: 0.85; max-width: 600px; margin: 0 auto; }
+
+        /* Navigation */
+        .nav-bar {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .nav-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 0.25rem;
+            overflow-x: auto;
+        }
+
+        .nav-inner a {
+            padding: 0.875rem 1rem;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: #64748b;
+            text-decoration: none;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .nav-inner a:hover { color: #1e293b; }
+        .nav-inner a.active { color: #667eea; border-bottom-color: #667eea; }
+
+        /* Content */
+        .content { max-width: 900px; margin: 0 auto; padding: 2rem; }
+
+        /* Section */
+        .section {
+            margin-bottom: 3rem;
+            scroll-margin-top: 4rem;
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section h2 .icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .section > p {
+            color: #64748b;
+            font-size: 0.9375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Steps */
+        .steps { counter-reset: step; }
+
+        .step {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            padding-left: 4.5rem;
+        }
+
+        .step::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 1.5rem;
+            top: 1.5rem;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .step h3 {
+            font-size: 1.0625rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.375rem;
+        }
+
+        .step p {
+            font-size: 0.875rem;
+            color: #475569;
+        }
+
+        /* Tip box */
+        .tip {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin-top: 0.75rem;
+            font-size: 0.8125rem;
+            color: #1e40af;
+        }
+
+        .tip strong { font-weight: 700; }
+
+        .warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0 8px 8px 0;
+            padding: 1rem 1.25rem;
+            margin-top: 0.75rem;
+            font-size: 0.8125rem;
+            color: #92400e;
+        }
+
+        /* Card grid */
+        .card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .info-card h4 {
+            font-size: 0.9375rem;
+            font-weight: 700;
+            margin-bottom: 0.375rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-card p { font-size: 0.8125rem; color: #64748b; }
+
+        /* Code */
+        code {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+        }
+
+        /* Table */
+        .ref-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 1rem;
+        }
+
+        .ref-table th {
+            background: #f1f5f9;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ref-table td {
+            padding: 0.75rem 1rem;
+            font-size: 0.8125rem;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-size: 0.8125rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .footer a { color: #667eea; text-decoration: none; }
+
+        /* Quick start banner */
+        .quick-start {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .quick-start h2 { color: white; margin-bottom: 0.5rem; justify-content: center; }
+        .quick-start p { opacity: 0.9; margin-bottom: 1.5rem; font-size: 0.9375rem; }
+
+        .quick-start-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .qs-step {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 1.25rem 0.75rem;
+        }
+
+        .qs-step .qs-num {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .qs-step .qs-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 2rem 1rem; }
+            .hero h1 { font-size: 1.5rem; }
+            .content { padding: 1.5rem 1rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .quick-start-steps { grid-template-columns: 1fr 1fr; }
+            .step { padding-left: 4rem; }
+        }
+
+        @media (max-width: 480px) {
+            .quick-start-steps { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+    <img src="images/logo.png" alt="EzExam">
+    <h1>Teacher Tutorial</h1>
+    <p>A complete guide to setting up and managing exams with EzExam</p>
+</div>
+
+<!-- Navigation -->
+<div class="nav-bar">
+    <div class="nav-inner">
+        <a href="#quick-start" class="active">Quick Start</a>
+        <a href="#classrooms">Classrooms</a>
+        <a href="#questions">Questions</a>
+        <a href="#categories">Categories</a>
+        <a href="#students">Students</a>
+        <a href="#exam-day">Exam Day</a>
+        <a href="#announcements">Announcements</a>
+        <a href="#results">Results</a>
+        <a href="#settings">Settings</a>
+    </div>
+</div>
+
+<div class="content">
+
+<!-- Quick Start -->
+<div class="quick-start" id="quick-start">
+    <h2>Quick Start Guide</h2>
+    <p>Get your first exam running in 4 simple steps</p>
+    <div class="quick-start-steps">
+        <div class="qs-step">
+            <div class="qs-num">1</div>
+            <div class="qs-label">Create questions in the Question Bank</div>
+        </div>
+        <div class="qs-step">
+            <div class="qs-num">2</div>
+            <div class="qs-label">Create a Classroom and configure exam settings</div>
+        </div>
+        <div class="qs-step">
+            <div class="qs-num">3</div>
+            <div class="qs-label">Assign questions to the classroom</div>
+        </div>
+        <div class="qs-step">
+            <div class="qs-num">4</div>
+            <div class="qs-label">Share the exam code with students</div>
+        </div>
+    </div>
+</div>
+
+<!-- Classrooms -->
+<div class="section" id="classrooms">
+    <h2><span class="icon">🏫</span> Classrooms</h2>
+    <p>A classroom represents one exam. Each classroom has a unique code that students use to join.</p>
+
+    <div class="steps">
+        <div class="step">
+            <h3>Create a Classroom</h3>
+            <p>Go to <strong>Classrooms</strong> in the sidebar and click <strong>Add Classroom</strong>. Fill in the classroom name (e.g., "Mathematics Final Exam 2026").</p>
+        </div>
+        <div class="step">
+            <h3>Configure Exam Settings</h3>
+            <p>Set the number of questions per exam, timer duration (in minutes), and choose whether to show results immediately, reveal correct answers, or allow answer review.</p>
+            <div class="tip"><strong>Tip:</strong> Leave the timer empty for untimed exams. Students can submit whenever they're ready.</div>
+        </div>
+        <div class="step">
+            <h3>Add Instructions</h3>
+            <p>Write custom instructions that students will see before starting the exam. This is a good place for rules, allowed materials, etc.</p>
+        </div>
+        <div class="step">
+            <h3>Assign Questions</h3>
+            <p>Open the classroom details and go to the <strong>Questions</strong> tab. Click <strong>Add Questions</strong> to select questions from your question bank. You can filter by category and difficulty level.</p>
+            <div class="warning"><strong>Important:</strong> Make sure you assign at least as many questions as the "questions per exam" setting. If you set 10 questions per exam, assign at least 10 questions.</div>
+        </div>
+        <div class="step">
+            <h3>Share the Code</h3>
+            <p>Each classroom gets a unique <strong>6-character code</strong> (e.g., <code>ABC123</code>). Share this code with your students. They enter it on the homepage to start the exam.</p>
+        </div>
+        <div class="step">
+            <h3>Activate / Deactivate</h3>
+            <p>Toggle the classroom's active status. When deactivated, students cannot access the exam with the code. Use this to control when exams are available.</p>
+        </div>
+    </div>
+
+    <div class="card-grid">
+        <div class="info-card">
+            <h4>🔀 Shuffle Questions</h4>
+            <p>Enable this to randomize the question order for each student, reducing cheating.</p>
+        </div>
+        <div class="info-card">
+            <h4>👁️ Preview Exam</h4>
+            <p>Click <strong>Preview Exam</strong> in classroom details to see exactly what students will see.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Questions -->
+<div class="section" id="questions">
+    <h2><span class="icon">❓</span> Question Bank</h2>
+    <p>Create and manage your questions. Questions can be reused across multiple classrooms.</p>
+
+    <div class="steps">
+        <div class="step">
+            <h3>Add a Question</h3>
+            <p>Click <strong>Add Question</strong>. Select a category, type the question text, fill in 4 answer options (A-D), and select the correct answer.</p>
+        </div>
+        <div class="step">
+            <h3>Set Difficulty Level</h3>
+            <p>Click the stars (1-5) to set the difficulty. This helps other teachers filter questions by level when building exams.</p>
+            <table class="ref-table" style="margin-top: 0.75rem;">
+                <tr><th>Stars</th><th>Level</th><th>Use for</th></tr>
+                <tr><td>1</td><td>Very Easy</td><td>Basic recall questions</td></tr>
+                <tr><td>2</td><td>Easy</td><td>Simple understanding</td></tr>
+                <tr><td>3</td><td>Medium</td><td>Application questions</td></tr>
+                <tr><td>4</td><td>Hard</td><td>Analysis and evaluation</td></tr>
+                <tr><td>5</td><td>Very Hard</td><td>Complex problem solving</td></tr>
+            </table>
+        </div>
+        <div class="step">
+            <h3>Add an Image (Optional)</h3>
+            <p>Upload an image for questions that need diagrams, charts, or photos. Max file size: 2MB.</p>
+        </div>
+        <div class="step">
+            <h3>Shuffle Answers</h3>
+            <p>Enable <strong>Shuffle Answers</strong> to randomize the order of options A-D for each student. The ABCD labels will be hidden.</p>
+        </div>
+    </div>
+
+    <h3 style="margin: 1.5rem 0 1rem; font-size: 1.125rem;">Bulk Import / Export</h3>
+
+    <div class="card-grid">
+        <div class="info-card">
+            <h4>📤 Import CSV</h4>
+            <p>Upload a CSV file to add many questions at once. Click <strong>Import CSV</strong> and upload your file. Categories are auto-created if they don't exist.</p>
+        </div>
+        <div class="info-card">
+            <h4>📥 Export CSV</h4>
+            <p>Click <strong>Export CSV</strong> to download all questions. Use this for backup or to transfer questions to another EzExam installation.</p>
+        </div>
+    </div>
+
+    <div class="tip"><strong>CSV format:</strong> <code>question_text, option_a, option_b, option_c, option_d, correct_answer, difficulty, category, shuffle_answers</code>. Download the template from the import modal for a ready-to-fill example.</div>
+</div>
+
+<!-- Categories -->
+<div class="section" id="categories">
+    <h2><span class="icon">📁</span> Categories</h2>
+    <p>Organize your questions into categories for easy filtering and management.</p>
+
+    <div class="steps">
+        <div class="step">
+            <h3>Create Categories</h3>
+            <p>Go to <strong>Categories</strong> and click <strong>Add Category</strong>. Give it a name (e.g., "Algebra", "Biology Chapter 5") and optional description.</p>
+        </div>
+        <div class="step">
+            <h3>Use Categories to Filter</h3>
+            <p>In the Question Bank, use the <strong>Category</strong> dropdown to quickly find questions from a specific topic.</p>
+        </div>
+    </div>
+
+    <div class="warning"><strong>Note:</strong> You cannot delete a category that has questions assigned to it. Move or delete the questions first.</div>
+</div>
+
+<!-- Students -->
+<div class="section" id="students">
+    <h2><span class="icon">🎓</span> Students</h2>
+    <p>Students register themselves when they enter the exam code. You can also pre-add students.</p>
+
+    <div class="steps">
+        <div class="step">
+            <h3>Automatic Registration</h3>
+            <p>Students self-register by entering the exam code on the homepage. They fill in their name, matric number, email, and phone number.</p>
+        </div>
+        <div class="step">
+            <h3>Student Groups</h3>
+            <p>Create groups within a classroom (e.g., "Section A", "Section B"). Students select their group during registration. Use this to organize and filter results.</p>
+        </div>
+        <div class="step">
+            <h3>View Students</h3>
+            <p>Go to <strong>Students</strong> to see all registered students. Search by name, email, or matric number.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Exam Day -->
+<div class="section" id="exam-day">
+    <h2><span class="icon">📝</span> Exam Day</h2>
+    <p>Here's what happens when students take the exam.</p>
+
+    <div class="steps">
+        <div class="step">
+            <h3>Students Enter the Code</h3>
+            <p>Students visit your EzExam site, enter the classroom code, and register with their details.</p>
+        </div>
+        <div class="step">
+            <h3>Review Instructions</h3>
+            <p>Students see the exam instructions you wrote, along with the question count and time limit. They click <strong>Start Exam</strong> when ready.</p>
+        </div>
+        <div class="step">
+            <h3>Answer Questions</h3>
+            <p>Students navigate through questions, select answers, and can skip and return to any question. A progress bar shows how many they've answered.</p>
+        </div>
+        <div class="step">
+            <h3>Timer and Auto-Submit</h3>
+            <p>If a timer is set, students see a countdown. They get a <strong>yellow warning at 5 minutes</strong> and a <strong>red warning at 1 minute</strong>. When time runs out, the exam auto-submits.</p>
+        </div>
+        <div class="step">
+            <h3>Submit and View Results</h3>
+            <p>After submitting, students see their score with a visual gauge, pass/fail status, and (if enabled) a review of their answers showing correct/wrong.</p>
+        </div>
+    </div>
+
+    <div class="card-grid">
+        <div class="info-card">
+            <h4>🔒 Anti-Cheat</h4>
+            <p>Copy, paste, right-click, and keyboard shortcuts (Ctrl+C, F12, etc.) are disabled during the exam.</p>
+        </div>
+        <div class="info-card">
+            <h4>🔄 Re-check Results</h4>
+            <p>Students can revisit their results anytime by entering their matric number and email for verification.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Announcements -->
+<div class="section" id="announcements">
+    <h2><span class="icon">📢</span> Announcements</h2>
+    <p>Send real-time scrolling messages to students during an ongoing exam.</p>
+
+    <div class="steps">
+        <div class="step">
+            <h3>Go to Announcements</h3>
+            <p>Click <strong>Announcements</strong> in the sidebar. Select the exam room you want to send a message to.</p>
+        </div>
+        <div class="step">
+            <h3>Type Your Message</h3>
+            <p>Write a short message (up to 500 characters). For example: "10 minutes remaining. Please check your answers." or "Question 5 has been updated."</p>
+        </div>
+        <div class="step">
+            <h3>Set Duration and Repeat</h3>
+            <p>Choose how long the message stays active (1-60 minutes). Set a repeat interval if you want the message to scroll, disappear, and reappear periodically.</p>
+            <table class="ref-table" style="margin-top: 0.75rem;">
+                <tr><th>Setting</th><th>What happens</th></tr>
+                <tr><td>No repeat</td><td>Message scrolls continuously until it expires</td></tr>
+                <tr><td>Every 30 seconds</td><td>Message scrolls once, hides, reappears after 30s</td></tr>
+                <tr><td>Every 5 minutes</td><td>Message appears briefly every 5 minutes</td></tr>
+            </table>
+        </div>
+        <div class="step">
+            <h3>Send</h3>
+            <p>Click <strong>Send</strong>. The message appears as a scrolling blue banner at the top of all students' screens within 5 seconds. It does not block their questions.</p>
+        </div>
+    </div>
+
+    <div class="tip"><strong>Tip:</strong> You can stop an announcement early by clicking the stop button in the announcement history table.</div>
+</div>
+
+<!-- Results -->
+<div class="section" id="results">
+    <h2><span class="icon">📈</span> Results & Analytics</h2>
+    <p>Track student performance and exam statistics.</p>
+
+    <div class="steps">
+        <div class="step">
+            <h3>View Exam Results</h3>
+            <p>Go to <strong>Exam Results</strong> to see all completed exam sessions. View each student's score, completion time, and individual answers.</p>
+        </div>
+        <div class="step">
+            <h3>Analytics Dashboard</h3>
+            <p>The <strong>Analytics</strong> page shows overall statistics: total exams taken, completion rate, average score, and pass rate (50% threshold). A performance breakdown by classroom is also available.</p>
+        </div>
+        <div class="step">
+            <h3>Notifications</h3>
+            <p>Click the bell icon in the top bar to see recent exam completions. New completions show a red badge. Click <strong>Mark all read</strong> to clear.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Settings -->
+<div class="section" id="settings">
+    <h2><span class="icon">⚙️</span> Settings</h2>
+    <p>Configure system settings and manage your account.</p>
+
+    <div class="card-grid">
+        <div class="info-card">
+            <h4>🖼️ System Logo</h4>
+            <p>Upload your own logo from Settings. It replaces the default logo on all pages. Accepts PNG, JPG, SVG, WebP (max 2MB). Click "Reset to Default" to revert.</p>
+        </div>
+        <div class="info-card">
+            <h4>🔑 Change Password</h4>
+            <p>Enter your current password and set a new one (minimum 8 characters). You'll stay logged in after changing.</p>
+        </div>
+        <div class="info-card">
+            <h4>👥 Admin Users</h4>
+            <p>Go to <strong>Admin Users</strong> to add more administrators. Each admin has full access to all features. You cannot delete your own account.</p>
+        </div>
+        <div class="info-card">
+            <h4>📋 Activity Logs</h4>
+            <p>The <strong>Activity Logs</strong> page shows all system actions (logins, logouts, changes) with timestamps and IP addresses for audit purposes.</p>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    <p>EzExam by <a href="https://azfarmiskam.site" target="_blank">AzfarMiskam</a> | <a href="/">Back to EzExam</a></p>
+</div>
+
+<!-- Scroll spy for nav -->
+<script>
+    const navLinks = document.querySelectorAll('.nav-inner a');
+    const sections = document.querySelectorAll('.section, .quick-start');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const top = section.offsetTop - 100;
+            if (window.scrollY >= top) {
+                current = section.id;
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
