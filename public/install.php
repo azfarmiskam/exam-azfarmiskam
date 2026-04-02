@@ -6,6 +6,12 @@
  * Upload all files, then visit: https://yourdomain.com/install.php
  */
 
+// Security headers
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Cache-Control: no-store, no-cache, must-revalidate');
+
 // Prevent running if already installed
 $basePath = dirname(__DIR__);
 if (file_exists($basePath . '/storage/.installed')) {
@@ -667,13 +673,18 @@ render:
         </div>
     </div>
 
-    <div class="warning-text">
-        <strong>Important:</strong> Delete <strong>public/install.php</strong> now for security. Anyone who visits this URL can reinstall the system.
+    <div class="alert alert-success">
+        The installer has been automatically disabled for security.
     </div>
 
     <div class="btn-group" style="margin-top: 1.5rem;">
         <a href="/login" class="btn btn-primary">Go to Admin Login &rarr;</a>
     </div>
+
+    <?php
+        // Auto-rename installer after showing success page
+        @rename(__FILE__, __DIR__ . '/install.php.disabled');
+    ?>
 
     <?php else: ?>
         <?php header('Location: install.php?step=0'); exit; ?>

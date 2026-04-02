@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.2.0 (April 2, 2026)
+
+### Features
+- Web-based updater (`public/update.php`) — upload new version zip to update the system
+- Preserves .env, database, uploaded files (storage/app), logs, and sessions
+- Auto-runs new migrations and clears caches after update
+- Creates backup of .env before updating
+- Shows update log with version comparison and confirmation step
+- Only accessible to logged-in admins
+
+---
+
 ## v2.1.0 (April 2, 2026)
 
 ### Features
