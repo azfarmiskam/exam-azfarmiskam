@@ -210,7 +210,7 @@ ExamJe by [AzfarMiskam](https://azfarmiskam.site). All rights reserved.
 
 ---
 
-**Version**: 2.0.0  
+**Version**: 2.1.0  
 **Last Updated**: April 2, 2026
 
 For full version history, see [CHANGELOG.md](CHANGELOG.md).

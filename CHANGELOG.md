@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.1.0 (April 2, 2026)
+
+### Features
+- Redesigned admin dashboard with stat cards (colored accents, sub-labels), quick actions grid, active classrooms list, recent exam results table, and score distribution chart
+- Hover effects on cards, quick actions, classroom items, and table rows
+- Sticky glassmorphism header on homepage
+- Extracted version history to CHANGELOG.md
+
+### Fixes
+- Fix homepage content hidden behind fixed header (padding override bug)
+- Fix footer text readability (darker background, white text)
+
+---
+
 ## v2.0.0 (April 2, 2026)
 
 ### Rebrand
