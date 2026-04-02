@@ -98,11 +98,11 @@ Then visit `http://localhost:8000/install.php`
 
 ## Default Credentials
 
-**Admin Account**
-- Email: admin@exam.test
-- Password: password
+When using the **web installer**, you create your own admin account during setup — no default credentials.
 
-⚠️ **Important**: Change the default password immediately after first login!
+When using `php artisan db:seed` (git source only):
+- Email: `admin@exam.test`
+- Password: `password`
 
 ## Security Features
 
