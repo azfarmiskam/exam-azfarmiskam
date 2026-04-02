@@ -277,20 +277,41 @@
                             <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Question Bank</h2>
                             <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.875rem;">Manage exam questions</p>
                         </div>
-                        <button class="btn btn-primary" onclick="openCreateQuestionModal()" style="display: flex; align-items: center; gap: 0.5rem;">
-                            <span>➕</span>
-                            <span>Add Question</span>
-                        </button>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <a href="/admin/api/questions-export" class="btn btn-secondary" style="display: flex; align-items: center; gap: 0.5rem; width: auto;">
+                                <span>📥</span>
+                                <span>Export CSV</span>
+                            </a>
+                            <button class="btn btn-secondary" onclick="openImportModal()" style="display: flex; align-items: center; gap: 0.5rem; width: auto;">
+                                <span>📤</span>
+                                <span>Import CSV</span>
+                            </button>
+                            <button class="btn btn-primary" onclick="openCreateQuestionModal()" style="display: flex; align-items: center; gap: 0.5rem; width: auto;">
+                                <span>➕</span>
+                                <span>Add Question</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Filters -->
                     <div class="card" style="margin-bottom: 1.5rem;">
                         <div class="card-body">
-                            <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 1rem;">
                                 <div class="form-group" style="margin: 0;">
                                     <label class="form-label">Category</label>
                                     <select id="questionCategoryFilter" class="form-control" onchange="filterQuestions()">
                                         <option value="">All Categories</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="margin: 0;">
+                                    <label class="form-label">Difficulty</label>
+                                    <select id="questionDifficultyFilter" class="form-control" onchange="filterQuestions()">
+                                        <option value="">All Levels</option>
+                                        <option value="1">&#9733; Very Easy</option>
+                                        <option value="2">&#9733;&#9733; Easy</option>
+                                        <option value="3">&#9733;&#9733;&#9733; Medium</option>
+                                        <option value="4">&#9733;&#9733;&#9733;&#9733; Hard</option>
+                                        <option value="5">&#9733;&#9733;&#9733;&#9733;&#9733; Very Hard</option>
                                     </select>
                                 </div>
                                 <div class="form-group" style="margin: 0;">
@@ -311,8 +332,9 @@
                                 <table class="data-table" id="questionsTable">
                                     <thead>
                                         <tr>
-                                            <th style="width: 40%;">Question</th>
+                                            <th style="width: 35%;">Question</th>
                                             <th>Category</th>
+                                            <th>Difficulty</th>
                                             <th>Answer</th>
                                             <th>Actions</th>
                                         </tr>
@@ -1037,6 +1059,19 @@
                             <option value="d">D</option>
                         </select>
                     </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Difficulty Level</label>
+                        <div class="star-rating" id="difficultyRating">
+                            <input type="hidden" name="difficulty" id="difficultyInput" value="3">
+                            <span class="star active" data-value="1">&#9733;</span>
+                            <span class="star active" data-value="2">&#9733;</span>
+                            <span class="star active" data-value="3">&#9733;</span>
+                            <span class="star" data-value="4">&#9733;</span>
+                            <span class="star" data-value="5">&#9733;</span>
+                            <span class="star-label" id="difficultyLabel">Medium</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeQuestionModal()">Cancel</button>
@@ -1194,6 +1229,48 @@
                 <button type="button" class="btn btn-primary" onclick="closeExamDetailsModal()">Close</button>
             </div>
         </div>
+        </div>
+    </div>
+
+    <!-- Import Questions Modal -->
+    <div class="modal" id="importModal" style="display: none;">
+        <div class="modal-overlay" onclick="closeImportModal()"></div>
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <h3>Import Questions from CSV</h3>
+                <button type="button" class="modal-close" onclick="closeImportModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="background: var(--bg-light); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                    <p style="font-size: 0.8125rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                        Upload a CSV file with these columns:
+                    </p>
+                    <div style="font-family: monospace; font-size: 0.75rem; background: #1e293b; color: #e2e8f0; padding: 0.625rem 0.875rem; border-radius: 6px; overflow-x: auto; white-space: nowrap;">
+                        question_text, option_a, option_b, option_c, option_d, correct_answer, category, shuffle_answers
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.5rem;">
+                        <strong>correct_answer</strong>: a, b, c, or d &nbsp;|&nbsp;
+                        <strong>category</strong>: auto-created if new &nbsp;|&nbsp;
+                        <strong>shuffle_answers</strong>: true/false (optional)
+                    </p>
+                    <a href="/admin/api/questions-template" style="display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; color: var(--primary); font-weight: 600; margin-top: 0.5rem; text-decoration: none;">
+                        📄 Download CSV Template
+                    </a>
+                </div>
+
+                <form id="importForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label class="form-label">CSV File</label>
+                        <input type="file" name="file" id="importFile" class="form-control" accept=".csv,.txt" required>
+                    </div>
+                </form>
+
+                <div id="importResult" style="display: none; margin-top: 1rem;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeImportModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="importBtn" onclick="submitImport()">Import</button>
+            </div>
         </div>
     </div>
 
@@ -2290,6 +2367,81 @@
         let editingQuestionId = null;
 
         // Load questions
+        // ==========================================
+        // IMPORT / EXPORT
+        // ==========================================
+        function openImportModal() {
+            document.getElementById('importForm').reset();
+            document.getElementById('importResult').style.display = 'none';
+            document.getElementById('importBtn').disabled = false;
+            document.getElementById('importBtn').textContent = 'Import';
+            document.getElementById('importModal').style.display = 'flex';
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').style.display = 'none';
+        }
+
+        async function submitImport() {
+            const fileInput = document.getElementById('importFile');
+            if (!fileInput.files.length) {
+                alert('Please select a CSV file.');
+                return;
+            }
+
+            const btn = document.getElementById('importBtn');
+            btn.disabled = true;
+            btn.textContent = 'Importing...';
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch('/admin/api/questions-import', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                const resultDiv = document.getElementById('importResult');
+                resultDiv.style.display = 'block';
+
+                if (result.success) {
+                    let html = `<div style="background: #d1fae5; color: #065f46; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.8125rem;">
+                        <strong>${result.message}</strong>
+                    </div>`;
+
+                    if (result.errors && result.errors.length > 0) {
+                        html += `<div style="background: #fef3c7; color: #92400e; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.75rem; margin-top: 0.5rem; max-height: 120px; overflow-y: auto;">
+                            <strong>Skipped rows:</strong><br>${result.errors.join('<br>')}
+                        </div>`;
+                    }
+
+                    resultDiv.innerHTML = html;
+                    btn.textContent = 'Done';
+
+                    // Reload questions and categories
+                    loadQuestions();
+                    loadCategories();
+                    showNotification(result.message, 'success');
+                } else {
+                    resultDiv.innerHTML = `<div style="background: #fee2e2; color: #991b1b; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.8125rem;">${result.message}</div>`;
+                    btn.disabled = false;
+                    btn.textContent = 'Import';
+                }
+            } catch (error) {
+                console.error('Import error:', error);
+                document.getElementById('importResult').style.display = 'block';
+                document.getElementById('importResult').innerHTML = `<div style="background: #fee2e2; color: #991b1b; padding: 0.75rem 1rem; border-radius: 0.5rem; font-size: 0.8125rem;">Import failed. Please check your file format.</div>`;
+                btn.disabled = false;
+                btn.textContent = 'Import';
+            }
+        }
+
         async function loadQuestions() {
             try {
                 const response = await fetch('/admin/api/questions', {
@@ -2314,7 +2466,7 @@
             if (questions.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="4" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <td colspan="5" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                             <div style="font-size: 3rem; margin-bottom: 1rem;">❓</div>
                             <div style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem;">No questions yet</div>
                             <div style="font-size: 0.875rem;">Add your first question to get started</div>
@@ -2328,6 +2480,7 @@
                 <tr>
                     <td style="font-size: 0.875rem;">${q.question_text.substring(0, 100)}${q.question_text.length > 100 ? '...' : ''}</td>
                     <td><span class="badge badge-secondary">${q.category ? q.category.name : 'No category'}</span></td>
+                    <td>${renderStars(q.difficulty || 3)}</td>
                     <td><span style="font-weight: 700; color: var(--primary);">${q.correct_answer.toUpperCase()}</span></td>
                     <td>
                         <div style="display: flex; gap: 0.5rem;">
@@ -2360,12 +2513,14 @@
         // Filter questions
         function filterQuestions() {
             const categoryId = document.getElementById('questionCategoryFilter').value;
+            const difficulty = document.getElementById('questionDifficultyFilter').value;
             const search = document.getElementById('questionSearch').value.toLowerCase();
 
             questions = allQuestions.filter(q => {
                 const matchesCategory = !categoryId || q.category_id == categoryId;
+                const matchesDifficulty = !difficulty || (q.difficulty || 3) == difficulty;
                 const matchesSearch = !search || q.question_text.toLowerCase().includes(search);
-                return matchesCategory && matchesSearch;
+                return matchesCategory && matchesDifficulty && matchesSearch;
             });
 
             renderQuestions();
@@ -2374,17 +2529,44 @@
         // Clear filters
         function clearFilters() {
             document.getElementById('questionCategoryFilter').value = '';
+            document.getElementById('questionDifficultyFilter').value = '';
             document.getElementById('questionSearch').value = '';
             questions = allQuestions;
             renderQuestions();
         }
 
         // Open create modal
+        // Star rating helpers
+        const difficultyLabels = { 1: 'Very Easy', 2: 'Easy', 3: 'Medium', 4: 'Hard', 5: 'Very Hard' };
+
+        function setDifficulty(value) {
+            document.getElementById('difficultyInput').value = value;
+            document.getElementById('difficultyLabel').textContent = difficultyLabels[value] || 'Medium';
+            document.querySelectorAll('#difficultyRating .star').forEach(star => {
+                star.classList.toggle('active', parseInt(star.dataset.value) <= value);
+            });
+        }
+
+        function renderStars(level) {
+            let html = '<span class="star-display">';
+            for (let i = 1; i <= 5; i++) {
+                html += i <= level ? '&#9733;' : '<span class="empty">&#9733;</span>';
+            }
+            html += '</span>';
+            return html;
+        }
+
+        // Attach star click handlers
+        document.querySelectorAll('#difficultyRating .star').forEach(star => {
+            star.addEventListener('click', () => setDifficulty(parseInt(star.dataset.value)));
+        });
+
         function openCreateQuestionModal() {
             editingQuestionId = null;
             document.getElementById('questionModalTitle').textContent = 'Add Question';
             document.getElementById('questionSaveBtn').textContent = 'Add Question';
             document.getElementById('questionForm').reset();
+            setDifficulty(3);
             document.getElementById('questionModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
@@ -2397,7 +2579,7 @@
             editingQuestionId = id;
             document.getElementById('questionModalTitle').textContent = 'Edit Question';
             document.getElementById('questionSaveBtn').textContent = 'Update Question';
-            
+
             const form = document.getElementById('questionForm');
             form.category_id.value = question.category_id;
             form.question_text.value = question.question_text;
@@ -2407,7 +2589,8 @@
             form.option_d.value = question.option_d;
             form.correct_answer.value = question.correct_answer;
             form.shuffle_answers.checked = question.shuffle_answers || false;
-            
+            setDifficulty(question.difficulty || 3);
+
             document.getElementById('questionModal').style.display = 'flex';
             document.body.style.overflow = 'hidden';
         }
@@ -2426,6 +2609,7 @@
                 option_c: formData.get('option_c'),
                 option_d: formData.get('option_d'),
                 correct_answer: formData.get('correct_answer'),
+                difficulty: parseInt(formData.get('difficulty')) || 3,
                 shuffle_answers: form.shuffle_answers.checked,
             };
 
@@ -3844,7 +4028,7 @@
 
     <!-- Footer -->
     <div style="position: fixed; bottom: 0; right: 0; left: 250px; text-align: center; padding: 0.75rem 0; color: var(--text-secondary); font-size: 0.75rem; background: var(--bg-primary); border-top: 1px solid var(--border-color); z-index: 5; transition: left 0.3s ease;">
-        © {{ date('Y') }} EzExam. All rights reserved.
+        © {{ date('Y') }} EzExam by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved.
     </div>
 </body>
 </html>

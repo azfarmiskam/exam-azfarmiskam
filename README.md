@@ -49,80 +49,46 @@ A comprehensive online examination system built with Laravel 12, designed for cr
 
 ## Installation
 
-### Local Development (Laravel Herd)
+### Web Installer (Recommended for shared hosting)
 
-1. **Clone the repository**
+Works on **cPanel**, **StackCP**, **VPS**, or any PHP hosting.
+
+1. **Upload files** to your server (via FTP, Git, or file manager)
+2. **Install dependencies** (via SSH or hosting terminal):
    ```bash
-   cd exam.azfarmiskam
+   composer install --optimize-autoloader --no-dev
+   npm install && npm run build
    ```
+3. **Visit** `https://yourdomain.com/install.php` in your browser
+4. Follow the 4-step wizard:
+   - **Step 1**: Server requirements check
+   - **Step 2**: Database configuration (MySQL/MariaDB/PostgreSQL/SQLite)
+   - **Step 3**: Create admin account
+   - **Step 4**: Installation complete
+5. **Delete** `public/install.php` after installation for security
 
-2. **Install dependencies**
+### Local Development
+
+1. **Clone and install**
    ```bash
+   git clone https://github.com/azfarmiskam/exam-azfarmiskam.git
+   cd exam-azfarmiskam
    composer install
    npm install
    ```
 
-3. **Configure environment**
+2. **Run the web installer**
+   ```bash
+   php artisan serve
+   ```
+   Then visit `http://localhost:8000/install.php`
+
+   Or configure manually:
    ```bash
    cp .env.example .env
    php artisan key:generate
-   ```
-
-4. **Run migrations and seeders**
-   ```bash
-   php artisan migrate:fresh --seed
-   ```
-
-5. **Build assets**
-   ```bash
+   php artisan migrate --seed
    npm run dev
-   ```
-
-6. **Access the application**
-   - URL: http://exam.azfarmiskam.test
-   - Admin Email: admin@exam.test
-   - Admin Password: password
-
-### Production Deployment (StackCP)
-
-1. **Prepare files**
-   - Upload all files except `.env`, `node_modules`, and `vendor`
-   
-2. **Configure environment**
-   - Copy `.env.example` to `.env`
-   - Update database credentials:
-     ```
-     DB_CONNECTION=mysql
-     DB_HOST=localhost
-     DB_PORT=3306
-     DB_DATABASE=your_database
-     DB_USERNAME=your_username
-     DB_PASSWORD=your_password
-     ```
-   - Set APP_URL to your domain: `https://exam.azfarmiskam.site`
-   - Set APP_ENV to `production`
-   - Set APP_DEBUG to `false`
-
-3. **Install dependencies via StackCP**
-   - Use StackCP's terminal or Git deployment features
-   - Run: `composer install --optimize-autoloader --no-dev`
-
-4. **Run migrations**
-   ```bash
-   php artisan migrate --force
-   php artisan db:seed --force
-   ```
-
-5. **Optimize for production**
-   ```bash
-   php artisan config:cache
-   php artisan route:cache
-   php artisan view:cache
-   ```
-
-6. **Build frontend assets**
-   ```bash
-   npm run build
    ```
 
 ## Database Schema
@@ -240,16 +206,37 @@ For issues or questions, please contact the development team.
 
 ## License
 
-This project is proprietary software developed for Azfar Miskam.
+EzExam by [AzfarMiskam](https://azfarmiskam.site). All rights reserved.
 
 ---
 
-**Version**: 1.2.0  
+**Version**: 1.3.0  
 **Last Updated**: April 2, 2026
 
 ---
 
 ## Version History
+
+### v1.3.0 (April 2, 2026)
+
+#### Features
+- Question difficulty levels (1-5 stars) — creator sets difficulty, other teachers can filter by level when selecting questions
+- Star rating selector in question create/edit modal
+- Difficulty stars displayed in question bank table
+- Difficulty filter dropdown in question bank
+- Difficulty included in CSV import/export
+
+### v1.2.1 (April 2, 2026)
+
+#### Features
+- Question bank CSV import — bulk upload questions via CSV file with auto-category creation
+- Question bank CSV export — download all questions as CSV
+- CSV template download — pre-formatted template for easy import
+- Web-based installer (`public/install.php`) — 5-step wizard for shared hosting (cPanel, StackCP, VPS)
+- Build script (`build.sh`) — creates clean distributable zip without secrets
+
+#### Branding
+- Added "by AzfarMiskam" trademark with link to https://azfarmiskam.site on all footers
 
 ### v1.2.0 (April 2, 2026)
 

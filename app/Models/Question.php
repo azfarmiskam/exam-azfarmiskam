@@ -17,6 +17,7 @@ class Question extends Model
         'option_c',
         'option_d',
         'correct_answer',
+        'difficulty',
         'shuffle_answers',
         'created_by',
     ];

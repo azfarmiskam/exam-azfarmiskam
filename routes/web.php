@@ -77,6 +77,9 @@ Route::middleware(['auth', 'no-cache'])->prefix('admin/api')->name('admin.api.')
     
     // Questions
     Route::apiResource('questions', \App\Http\Controllers\Admin\QuestionController::class);
+    Route::post('questions-import', [\App\Http\Controllers\Admin\QuestionController::class, 'import'])->name('questions.import');
+    Route::get('questions-export', [\App\Http\Controllers\Admin\QuestionController::class, 'export'])->name('questions.export');
+    Route::get('questions-template', [\App\Http\Controllers\Admin\QuestionController::class, 'template'])->name('questions.template');
     
     // Students
     Route::apiResource('students', \App\Http\Controllers\Admin\StudentController::class);

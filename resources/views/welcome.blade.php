@@ -109,7 +109,7 @@
         <!-- Footer -->
         <footer class="homepage-footer">
             <div class="container">
-                <p>&copy; {{ date('Y') }} EzExam. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} EzExam by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved.</p>
             </div>
         </footer>
     </div>

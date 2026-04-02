@@ -712,6 +712,47 @@
     background: var(--bg-light);
 }
 
+/* Star Rating */
+.star-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.star-rating .star {
+    font-size: 1.5rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: color 0.15s, transform 0.15s;
+    line-height: 1;
+    user-select: none;
+}
+
+.star-rating .star:hover {
+    transform: scale(1.15);
+}
+
+.star-rating .star.active {
+    color: #f59e0b;
+}
+
+.star-label {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.star-display {
+    color: #f59e0b;
+    font-size: 0.8125rem;
+    letter-spacing: -1px;
+}
+
+.star-display .empty {
+    color: #e2e8f0;
+}
+
 /* Badges */
 .badge {
     padding: 0.25rem 0.625rem;
