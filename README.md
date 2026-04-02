@@ -219,6 +219,9 @@ EzExam by [AzfarMiskam](https://azfarmiskam.site). All rights reserved.
 
 ### v1.4.0 (April 2, 2026)
 
+#### Fixes
+- Fix empty dropdowns in Announcements and Create Question — classrooms and categories now preload on dashboard init
+
 #### Features
 - Real-time announcement system — teachers can send scrolling messages to students mid-exam
 - Announcements page in admin sidebar with send form, duration selector, and history table
