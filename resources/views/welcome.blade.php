@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Online Examination System - Enter your exam code to begin">
-    <title>EzExam - Welcome</title>
+    <title>ExamJe - Welcome</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,7 @@
             <div class="container">
                 <nav class="homepage-nav">
                     <a href="/" class="homepage-logo">
-                        <img src="{{ $logoUrl }}" alt="EzExam" class="logo-img">
+                        <img src="{{ $logoUrl }}" alt="ExamJe" class="logo-img">
                     </a>
                     @auth
                         <a href="{{ route('admin.dashboard') }}" class="admin-login-btn">
@@ -42,7 +42,7 @@
         <main class="homepage-main">
             <div class="container">
                 <div class="homepage-content">
-                    <h1 class="homepage-title">Welcome to EzExam</h1>
+                    <h1 class="homepage-title">Welcome to ExamJe</h1>
                     <p class="homepage-subtitle">Enter your exam code below to start your examination</p>
 
                     <!-- Main Grid Container -->
@@ -109,7 +109,7 @@
         <!-- Footer -->
         <footer class="homepage-footer">
             <div class="container">
-                <p>&copy; {{ date('Y') }} EzExam by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved. v{{ config('app.version') }}</p>
+                <p>&copy; {{ date('Y') }} ExamJe by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved. v{{ config('app.version') }}</p>
             </div>
         </footer>
     </div>

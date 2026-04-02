@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin Dashboard - EzExam</title>
+    <title>Admin Dashboard - ExamJe</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
             <!-- Sidebar Header -->
             <div class="sidebar-header">
                 <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-                    <img src="{{ $logoUrl }}" alt="EzExam" style="height: 40px; width: auto; object-fit: contain;">
+                    <img src="{{ $logoUrl }}" alt="ExamJe" style="height: 40px; width: auto; object-fit: contain;">
                 </a>
                 <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
                     <span id="toggleIcon">◀</span>
@@ -227,7 +227,7 @@
 
                     <div class="card">
                         <div class="card-body">
-                            <h3>Welcome to EzExam Admin Dashboard!</h3>
+                            <h3>Welcome to ExamJe Admin Dashboard!</h3>
                             <p>Get started by creating your first classroom or adding questions to the question bank.</p>
                         </div>
                     </div>
@@ -867,11 +867,11 @@
                             <form id="settingsForm">
                                 <div class="form-group">
                                     <label class="form-label">System Name</label>
-                                    <input type="text" class="form-control" id="systemName" value="EzExam System" placeholder="Enter system name">
+                                    <input type="text" class="form-control" id="systemName" value="ExamJe System" placeholder="Enter system name">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">System Email</label>
-                                    <input type="email" class="form-control" id="systemEmail" value="admin@ezexam.com" placeholder="Enter system email">
+                                    <input type="email" class="form-control" id="systemEmail" value="admin@examje.com" placeholder="Enter system email">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Timezone</label>
@@ -4076,8 +4076,8 @@
         }
 
         function resetSettings() {
-            document.getElementById('systemName').value = 'EzExam System';
-            document.getElementById('systemEmail').value = 'admin@ezexam.com';
+            document.getElementById('systemName').value = 'ExamJe System';
+            document.getElementById('systemEmail').value = 'admin@examje.com';
             document.getElementById('timezone').value = 'Asia/Kuala_Lumpur';
             document.getElementById('allowLateSubmission').checked = true;
             document.getElementById('showScoreImmediately').checked = true;
@@ -4213,8 +4213,8 @@
             const saved = localStorage.getItem('systemSettings');
             if (saved) {
                 const settings = JSON.parse(saved);
-                document.getElementById('systemName').value = settings.system_name || 'EzExam System';
-                document.getElementById('systemEmail').value = settings.system_email || 'admin@ezexam.com';
+                document.getElementById('systemName').value = settings.system_name || 'ExamJe System';
+                document.getElementById('systemEmail').value = settings.system_email || 'admin@examje.com';
                 document.getElementById('timezone').value = settings.timezone || 'Asia/Kuala_Lumpur';
                 document.getElementById('allowLateSubmission').checked = settings.allow_late_submission !== false;
                 document.getElementById('showScoreImmediately').checked = settings.show_score_immediately !== false;
@@ -4330,7 +4330,7 @@
 
     <!-- Footer -->
     <div style="position: fixed; bottom: 0; right: 0; left: 250px; text-align: center; padding: 0.75rem 0; color: var(--text-secondary); font-size: 0.75rem; background: var(--bg-primary); border-top: 1px solid var(--border-color); z-index: 5; transition: left 0.3s ease;">
-        © {{ date('Y') }} EzExam by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved. v{{ config('app.version') }}
+        © {{ date('Y') }} ExamJe by <a href="https://azfarmiskam.site" target="_blank" style="color: inherit; text-decoration: underline;">AzfarMiskam</a>. All rights reserved. v{{ config('app.version') }}
     </div>
 </body>
 </html>

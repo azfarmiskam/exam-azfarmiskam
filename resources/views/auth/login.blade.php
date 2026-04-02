@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - EzExam</title>
+    <title>Admin Login - ExamJe</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -33,7 +33,7 @@
                     <div class="auth-brand">
                         <div class="brand-content">
                             <div class="brand-logo">
-                                <img src="{{ $logoUrl }}" alt="EzExam" style="height: 80px; width: auto; margin-bottom: 1rem;">
+                                <img src="{{ $logoUrl }}" alt="ExamJe" style="height: 80px; width: auto; margin-bottom: 1rem;">
                                 <p class="brand-tagline">Admin Portal</p>
                             </div>
                         </div>

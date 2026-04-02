@@ -238,7 +238,7 @@ class QuestionController extends Controller
             fclose($handle);
         };
 
-        $filename = 'ezexam-questions-' . date('Y-m-d') . '.csv';
+        $filename = 'examje-questions-' . date('Y-m-d') . '.csv';
 
         return response()->stream($callback, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
@@ -264,7 +264,7 @@ class QuestionController extends Controller
 
         return response()->stream($callback, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="ezexam-import-template.csv"',
+            'Content-Disposition' => 'attachment; filename="examje-import-template.csv"',
         ]);
     }
 

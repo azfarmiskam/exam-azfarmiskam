@@ -1,4 +1,4 @@
-# EzExam - Multiple Choice Examination Platform
+# ExamJe - Multiple Choice Examination Platform
 
 A comprehensive online examination system built with Laravel 12, designed for creating and managing multiple-choice exams with real-time grading and analytics.
 
@@ -206,16 +206,33 @@ For issues or questions, please contact the development team.
 
 ## License
 
-EzExam by [AzfarMiskam](https://azfarmiskam.site). All rights reserved.
+ExamJe by [AzfarMiskam](https://azfarmiskam.site). All rights reserved.
 
 ---
 
-**Version**: 1.4.0  
+**Version**: 2.0.0  
 **Last Updated**: April 2, 2026
 
 ---
 
 ## Version History
+
+### v2.0.0 (April 2, 2026)
+
+#### Rebrand
+- Renamed system from EzExam to **ExamJe**
+- Updated all views, titles, footers, installer, tutorial, config, and documentation
+
+#### Features
+- Teacher tutorial page (`/tutorial.html`) with full guide
+- Tutorial link (book icon) in admin top bar
+- Dynamic logo upload from Settings page with reset to default
+- Version number displayed in all footers dynamically
+- Announcement repeat interval options (15s, 30s, 1min, 2min, 5min)
+- Announcement duration options (1-60 minutes)
+- Overlay crawler (fixed position, no page push, click-through)
+- Announcements work in preview mode
+- Faster announcement polling (5 seconds)
 
 ### v1.4.0 (April 2, 2026)
 

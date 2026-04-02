@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Register for {{ $classroom->name }} - EzExam</title>
+    <title>Register for {{ $classroom->name }} - ExamJe</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -185,7 +185,7 @@
 <body>
     <div class="register-container">
         <div class="header">
-            <img src="{{ $logoUrl }}" alt="EzExam" style="height: 64px; width: auto; margin-bottom: 0.75rem;">
+            <img src="{{ $logoUrl }}" alt="ExamJe" style="height: 64px; width: auto; margin-bottom: 0.75rem;">
             <h1>Student Registration</h1>
             <p>Please fill in your details to start the exam</p>
         </div>

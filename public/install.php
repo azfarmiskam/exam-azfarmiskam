@@ -1,6 +1,6 @@
 <?php
 /**
- * EzExam Web Installer
+ * ExamJe Web Installer
  *
  * One-click installation wizard for shared hosting (cPanel, StackCP) and VPS.
  * Upload all files, then visit: https://yourdomain.com/install.php
@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $appKey = 'base64:' . base64_encode(random_bytes(32));
 
         // Write .env file
-        $envContent = "APP_NAME=EzExam
+        $envContent = "APP_NAME=ExamJe
 APP_ENV=production
 APP_KEY={$appKey}
 APP_DEBUG=false
@@ -98,7 +98,7 @@ MAIL_HOST=127.0.0.1
 MAIL_PORT=2525
 MAIL_USERNAME=null
 MAIL_PASSWORD=null
-MAIL_FROM_ADDRESS=\"noreply@ezexam.com\"
+MAIL_FROM_ADDRESS=\"noreply@examje.com\"
 MAIL_FROM_NAME=\"\${APP_NAME}\"
 
 VITE_APP_NAME=\"\${APP_NAME}\"
@@ -254,7 +254,7 @@ render:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Install EzExam</title>
+    <title>Install ExamJe</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -368,10 +368,10 @@ render:
 <div class="installer">
     <div class="installer-header">
         <?php if (file_exists(__DIR__ . '/images/logo.png')): ?>
-            <img src="images/logo.png" alt="EzExam">
+            <img src="images/logo.png" alt="ExamJe">
         <?php endif; ?>
-        <h1>EzExam Installer</h1>
-        <p>v1.3.0</p>
+        <h1>ExamJe Installer</h1>
+        <p>v2.0.0</p>
     </div>
 
     <!-- Steps -->
@@ -396,7 +396,7 @@ render:
     <!-- ==================== STEP 0: Installation Guide ==================== -->
 
     <div class="guide-section">
-        <h3>Welcome to EzExam</h3>
+        <h3>Welcome to ExamJe</h3>
         <p style="font-size: 0.8125rem; color: #64748b; margin-bottom: 1rem;">
             Before you begin, make sure you have completed the preparation steps below for your hosting platform.
         </p>
@@ -405,7 +405,7 @@ render:
     <div class="guide-section">
         <h3><span class="num">1</span> Upload Files</h3>
         <p style="font-size: 0.8125rem; color: #64748b; margin-bottom: 0.75rem;">
-            Extract the EzExam package and upload all files to your server. The <code>public/</code> folder should be your web root (document root).
+            Extract the ExamJe package and upload all files to your server. The <code>public/</code> folder should be your web root (document root).
         </p>
     </div>
 
@@ -463,15 +463,15 @@ render:
             <div class="guide-card">
                 <h4>VPS / Cloud Server</h4>
                 <p>SSH into your server and navigate to your project directory:</p>
-                <div class="command-box">cd /var/www/ezexam<br>composer install --optimize-autoloader --no-dev<br>npm install &amp;&amp; npm run build<br>chown -R www-data:www-data storage bootstrap/cache<br>chmod -R 775 storage bootstrap/cache</div>
+                <div class="command-box">cd /var/www/examje<br>composer install --optimize-autoloader --no-dev<br>npm install &amp;&amp; npm run build<br>chown -R www-data:www-data storage bootstrap/cache<br>chmod -R 775 storage bootstrap/cache</div>
             </div>
             <div class="guide-card">
                 <h4>Nginx Config</h4>
-                <p>Set <code>root</code> to <code>/var/www/ezexam/public</code> in your Nginx server block. Ensure <code>try_files $uri $uri/ /index.php?$query_string;</code> is set.</p>
+                <p>Set <code>root</code> to <code>/var/www/examje/public</code> in your Nginx server block. Ensure <code>try_files $uri $uri/ /index.php?$query_string;</code> is set.</p>
             </div>
             <div class="guide-card">
                 <h4>Create Database</h4>
-                <div class="command-box">mysql -u root -p<br>CREATE DATABASE ezexam;<br>CREATE USER 'ezexam'@'localhost' IDENTIFIED BY 'your_password';<br>GRANT ALL ON ezexam.* TO 'ezexam'@'localhost';<br>FLUSH PRIVILEGES;</div>
+                <div class="command-box">mysql -u root -p<br>CREATE DATABASE examje;<br>CREATE USER 'examje'@'localhost' IDENTIFIED BY 'your_password';<br>GRANT ALL ON examje.* TO 'examje'@'localhost';<br>FLUSH PRIVILEGES;</div>
             </div>
         </div>
 
@@ -570,7 +570,7 @@ render:
             </div>
             <div class="form-group">
                 <label class="form-label">Database Name</label>
-                <input type="text" name="db_database" class="form-control" value="<?= htmlspecialchars($_POST['db_database'] ?? '') ?>" placeholder="ezexam">
+                <input type="text" name="db_database" class="form-control" value="<?= htmlspecialchars($_POST['db_database'] ?? '') ?>" placeholder="examje">
             </div>
             <div class="form-row">
                 <div class="form-group">
@@ -632,7 +632,7 @@ render:
 
         <div class="btn-group">
             <a href="install.php?step=2" class="btn btn-secondary">&larr; Back</a>
-            <button type="submit" class="btn btn-primary" id="installBtn">Install EzExam</button>
+            <button type="submit" class="btn btn-primary" id="installBtn">Install ExamJe</button>
         </div>
     </form>
 
@@ -649,7 +649,7 @@ render:
     <div style="text-align: center;">
         <div class="success-icon">&#10003;</div>
         <h2 style="font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">Installation Complete!</h2>
-        <p style="color: #64748b; font-size: 0.9375rem;">EzExam has been installed successfully.</p>
+        <p style="color: #64748b; font-size: 0.9375rem;">ExamJe has been installed successfully.</p>
     </div>
 
     <div class="info-box">
