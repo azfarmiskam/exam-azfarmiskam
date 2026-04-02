@@ -210,12 +210,17 @@ EzExam by [AzfarMiskam](https://azfarmiskam.site). All rights reserved.
 
 ---
 
-**Version**: 1.3.0  
+**Version**: 1.3.1  
 **Last Updated**: April 2, 2026
 
 ---
 
 ## Version History
+
+### v1.3.1 (April 2, 2026)
+
+#### Fixes
+- "Finish" button on last question now opens submit confirmation modal instead of doing nothing
 
 ### v1.3.0 (April 2, 2026)
 

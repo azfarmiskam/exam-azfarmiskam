@@ -1066,6 +1066,8 @@
         function nextQuestion() {
             if (currentQuestionIndex < questions.length - 1) {
                 loadQuestion(currentQuestionIndex + 1);
+            } else {
+                submitExam();
             }
         }
 
