@@ -431,11 +431,9 @@ render:
         <div class="guide-content active" id="guide-cpanel">
             <div class="guide-card">
                 <h4>cPanel Shared Hosting</h4>
-                <p>Go to <strong>cPanel &gt; Terminal</strong> or use SSH access:</p>
+                <p>If you downloaded the release zip, assets are pre-built — <strong>no npm needed</strong>. Just run composer if dependencies are missing:</p>
                 <div class="command-box">cd ~/public_html<br>composer install --optimize-autoloader --no-dev</div>
-                <p style="margin-top: 0.5rem;">If your hosting has Node.js support (via cPanel &gt; Setup Node.js App):</p>
-                <div class="command-box">npm install &amp;&amp; npm run build</div>
-                <p style="margin-top: 0.5rem;">If no Node.js: run <code>npm run build</code> locally and upload the <code>public/build/</code> folder.</p>
+                <p style="margin-top: 0.5rem;">No terminal? Some hosts allow composer via cPanel &gt; <strong>Setup PHP App</strong> or contact your host.</p>
             </div>
             <div class="guide-card">
                 <h4>Document Root</h4>
@@ -450,10 +448,8 @@ render:
         <div class="guide-content" id="guide-stackcp">
             <div class="guide-card">
                 <h4>StackCP Shared Hosting</h4>
-                <p>Use <strong>StackCP &gt; Terminal</strong> or Git deployment:</p>
+                <p>If you downloaded the release zip, assets are pre-built — <strong>no npm needed</strong>. Just run composer if dependencies are missing:</p>
                 <div class="command-box">cd ~/public_html<br>composer install --optimize-autoloader --no-dev</div>
-                <p style="margin-top: 0.5rem;">Build assets locally and upload <code>public/build/</code> folder, or if Node.js is available:</p>
-                <div class="command-box">npm install &amp;&amp; npm run build</div>
             </div>
             <div class="guide-card">
                 <h4>Document Root</h4>
@@ -469,7 +465,8 @@ render:
             <div class="guide-card">
                 <h4>VPS / Cloud Server</h4>
                 <p>SSH into your server and navigate to your project directory:</p>
-                <div class="command-box">cd /var/www/examje<br>composer install --optimize-autoloader --no-dev<br>npm install &amp;&amp; npm run build<br>chown -R www-data:www-data storage bootstrap/cache<br>chmod -R 775 storage bootstrap/cache</div>
+                <div class="command-box">cd /var/www/examje<br>composer install --optimize-autoloader --no-dev<br>chown -R www-data:www-data storage bootstrap/cache<br>chmod -R 775 storage bootstrap/cache</div>
+                <p style="margin-top: 0.5rem;">Assets are pre-built in the release zip. Only run <code>npm install && npm run build</code> if installing from git source.</p>
             </div>
             <div class="guide-card">
                 <h4>Nginx Config</h4>

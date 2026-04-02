@@ -49,39 +49,30 @@ A comprehensive online examination system built with Laravel 12, designed for cr
 
 ## Installation
 
-### Web Installer (Recommended for shared hosting)
+### From Release Zip (Recommended — no terminal needed)
 
-Works on **cPanel**, **StackCP**, **VPS**, or any PHP hosting.
+Works on **cPanel**, **StackCP**, **VPS**, or any PHP hosting. No Node.js or npm required — assets are pre-built.
 
-1. **Upload files** to your server (via FTP, Git, or file manager)
-2. **Install dependencies** (via SSH or hosting terminal):
-   ```bash
-   composer install --optimize-autoloader --no-dev
-   npm install && npm run build
-   ```
-3. **Visit** `https://yourdomain.com/install.php` in your browser
-4. Follow the 4-step wizard:
-   - **Step 1**: Server requirements check
-   - **Step 2**: Database configuration (MySQL/MariaDB/PostgreSQL/SQLite)
-   - **Step 3**: Create admin account
-   - **Step 4**: Installation complete
-5. **Delete** `public/install.php` after installation for security
+1. **Download** the latest release zip from [GitHub Releases](https://github.com/azfarmiskam/exam-azfarmiskam/releases)
+2. **Extract & upload** all files to your server (via FTP or file manager)
+3. **Set document root** to the `public` folder
+4. **Visit** `https://yourdomain.com/install.php` in your browser
+5. Follow the 5-step wizard (guide, requirements, database, admin account, done)
 
-### Local Development
+> **Note:** If the requirements check shows "Composer Dependencies: Not installed", you need SSH access to run `composer install --no-dev` in the project root. Most shared hosts have a terminal in cPanel or StackCP.
 
-1. **Clone and install**
-   ```bash
-   git clone https://github.com/azfarmiskam/exam-azfarmiskam.git
-   cd exam-azfarmiskam
-   composer install
-   npm install
-   ```
+### From Git Source (for developers)
 
-2. **Run the web installer**
-   ```bash
-   php artisan serve
-   ```
-   Then visit `http://localhost:8000/install.php`
+Requires PHP, Composer, Node.js, and npm.
+
+```bash
+git clone https://github.com/azfarmiskam/exam-azfarmiskam.git
+cd exam-azfarmiskam
+composer install
+npm install && npm run build
+php artisan serve
+```
+Then visit `http://localhost:8000/install.php`
 
    Or configure manually:
    ```bash
